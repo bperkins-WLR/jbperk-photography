@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JBPerk Photography — Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Slab:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0a; --bg2: #111; --bg3: #1a1a1a;
+            --text: #e8e8e8; --text2: #999; --gold: #c9a96e; --gold-light: #d4b87a;
+            --border: #2a2a2a; --danger: #c0392b; --success: #27ae60;
+        }
+        body { font-family: 'Cormorant Garamond', serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        /* Login Screen */
+        .login-screen {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 100vh; padding: 2rem;
+        }
+        .login-screen h1 {
+            font-family: 'Josefin Slab', serif; font-size: 1.2rem; font-weight: 300;
+            letter-spacing: 6px; text-transform: uppercase; color: var(--gold); margin-bottom: 2rem;
+        }
+        .login-box {
+            background: var(--bg2); border: 1px solid var(--border); padding: 2.5rem;
+            max-width: 400px; width: 100%; text-align: center;
+        }
+        .login-box p { color: var(--text2); font-size: 1.1rem; margin-bottom: 1.5rem; }
+        .login-box input {
+            width: 100%; padding: 12px 16px; background: var(--bg); border: 1px solid var(--border);
+            color: var(--text); font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;
+            text-align: center; margin-bottom: 1rem; outline: none; transition: border-color 0.3s;
+        }
+        .login-box input:focus { border-color: var(--gold); }
+        .login-box button {
+            width: 100%; padding: 12px; background: var(--gold); border: none; color: var(--bg);
+            font-family: 'Josefin Slab', serif; font-size: 0.85rem; font-weight: 500;
+            letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: background 0.3s;
+        }
+        .login-box button:hover { background: var(--gold-light); }
+        .login-error { color: var(--danger); font-size: 0.95rem; margin-top: 0.8rem; display: none; }
+
+        /* Dashboard */
+        .dashboard { display: none; padding: 2rem; max-width: 1200px; margin: 0 auto; }
+        .dash-header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem;
+        }
+        .dash-header h1 {
+            font-family: 'Josefin Slab', serif; font-size: 1rem; font-weight: 300;
+            letter-spacing: 5px; text-transform: uppercase; color: var(--gold);
+        }
+        .dash-header .logout {
+            background: none; border: 1px solid var(--border); color: var(--text2);
+            padding: 6px 16px; font-family: 'Josefin Slab', serif; font-size: 0.75rem;
+            letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.3s;
+        }
+        .dash-header .logout:hover { border-color: var(--gold); color: var(--gold); }
+
+        .section-title {
+            font-family: 'Josefin Slab', serif; font-size: 0.85rem; font-weight: 400;
+            letter-spacing: 4px; text-transform: uppercase; color: var(--gold);
+            margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
+        }
+
+        .slots-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem; margin-bottom: 2rem;
+        }
+
+        .slot-card {
+            background: var(--bg2); border: 1px solid var(--border); overflow: hidden;
+            transition: border-color 0.3s;
+        }
+        .slot-card:hover { border-color: var(--gold); }
+        .slot-card.featured { grid-column: span 2; }
+
+        .slot-label {
+            padding: 10px 14px; font-family: 'Josefin Slab', serif; font-size: 0.75rem;
+            font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
+            background: var(--bg3); border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .slot-label .slot-status {
+            font-size: 0.65rem; letter-spacing: 1px; padding: 2px 8px;
+        }
+        .slot-label .slot-status.empty { color: var(--text2); }
+        .slot-label .slot-status.uploaded { color: var(--success); }
+
+        .slot-preview {
+            position: relative; width: 100%; aspect-ratio: 16/10;
+            background: var(--bg); display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+        }
+        .slot-preview img {
+            width: 100%; height: 100%; object-fit: cover; display: none;
+        }
+        .slot-preview .placeholder-icon {
+            color: var(--border); display: flex; flex-direction: column;
+            align-items: center; gap: 0.5rem;
+        }
+        .slot-preview .placeholder-icon svg { width: 40px; height: 40px; stroke: var(--border); fill: none; stroke-width: 1.5; }
+        .slot-preview .placeholder-icon span { font-size: 0.85rem; color: var(--text2); }
+
+        .slot-actions {
+            padding: 10px 14px; display: flex; gap: 8px; background: var(--bg2);
+            border-top: 1px solid var(--border);
+        }
+        .slot-actions label, .slot-actions button {
+            flex: 1; padding: 8px; text-align: center; font-family: 'Josefin Slab', serif;
+            font-size: 0.7rem; font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
+            cursor: pointer; transition: all 0.3s; border: 1px solid var(--border);
+        }
+        .slot-actions label { background: var(--gold); color: var(--bg); border-color: var(--gold); }
+        .slot-actions label:hover { background: var(--gold-light); }
+        .slot-actions .delete-btn { background: none; color: var(--danger); border-color: var(--danger); opacity: 0.6; }
+        .slot-actions .delete-btn:hover { opacity: 1; }
+        .slot-actions input[type="file"] { display: none; }
+
+        /* Drop zone highlight */
+        .slot-card.drag-over { border-color: var(--gold); box-shadow: 0 0 20px rgba(201,169,110,0.2); }
+        .slot-card.drag-over .slot-preview { background: rgba(201,169,110,0.05); }
+
+        /* Upload progress */
+        .upload-progress {
+            position: absolute; bottom: 0; left: 0; height: 3px; background: var(--gold);
+            transition: width 0.3s; width: 0;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed; bottom: 2rem; right: 2rem; padding: 14px 24px;
+            background: var(--bg3); border: 1px solid var(--border); color: var(--text);
+            font-size: 0.95rem; z-index: 1000; transform: translateY(100px); opacity: 0;
+            transition: all 0.4s ease;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { border-color: var(--success); }
+        .toast.error { border-color: var(--danger); }
+
+        /* Loading spinner */
+        .loading { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--border);
+            border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 768px) {
+            .slots-grid { grid-template-columns: 1fr; }
+            .slot-card.featured { grid-column: span 1; }
+            .dashboard { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Login -->
+<div class="login-screen" id="loginScreen">
+    <h1>JBPerk Photography</h1>
+    <div class="login-box">
+        <p>Admin Dashboard</p>
+        <input type="password" id="passInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
+        <button onclick="doLogin()">Sign In</button>
+        <div class="login-error" id="loginError">Incorrect password</div>
+    </div>
+</div>
+
+<!-- Dashboard -->
+<div class="dashboard" id="dashboard">
+    <div class="dash-header">
+        <h1>Photo Manager</h1>
+        <button class="logout" onclick="doLogout()">Sign Out</button>
+    </div>
+
+    <h2 class="section-title">Wedding Photos</h2>
+    <div class="slots-grid" id="weddingSlots"></div>
+
+    <h2 class="section-title">Portrait Photos</h2>
+    <div class="slots-grid" id="portraitSlots"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SLOTS = {
+    wedding: [
+        { id: 'wedding-featured', label: 'Featured', featured: true },
+        { id: 'wedding-ceremony', label: 'Ceremony' },
+        { id: 'wedding-reception', label: 'Reception' },
+        { id: 'wedding-details', label: 'Details' },
+        { id: 'wedding-firstdance', label: 'First Dance' },
+        { id: 'wedding-couple', label: 'Couple Portrait' },
+        { id: 'wedding-film', label: 'Film Preview', featured: true },
+    ],
+    portrait: [
+        { id: 'portrait-portrait', label: 'Portrait' },
+        { id: 'portrait-headshot', label: 'Headshot' },
+        { id: 'portrait-senior', label: 'Senior' },
+        { id: 'portrait-family', label: 'Family' },
+        { id: 'portrait-creative', label: 'Creative' },
+        { id: 'portrait-engagement', label: 'Engagement' },
+    ]
+};
+
+let authToken = '';
+let currentImages = {};
+
+function doLogin() {
+    const pass = document.getElementById('passInput').value;
+    authToken = pass;
+    // Try fetching images to validate
+    fetch('/api/images')
+        .then(r => r.json())
+        .then(data => {
+            if (data.images !== undefined) {
+                currentImages = data.images;
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                renderSlots();
+            } else {
+                showLoginError();
+            }
+        })
+        .catch(() => {
+            // If API isn't ready yet, still let them in (images endpoint is public)
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            renderSlots();
+        });
+}
+
+function showLoginError() {
+    const err = document.getElementById('loginError');
+    err.style.display = 'block';
+    setTimeout(() => err.style.display = 'none', 3000);
+}
+
+function doLogout() {
+    authToken = '';
+    currentImages = {};
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('passInput').value = '';
+}
+
+function renderSlots() {
+    renderSection('weddingSlots', SLOTS.wedding);
+    renderSection('portraitSlots', SLOTS.portrait);
+}
+
+function renderSection(containerId, slots) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    slots.forEach(slot => {
+        const hasImage = currentImages[slot.id];
+        const card = document.createElement('div');
+        card.className = 'slot-card' + (slot.featured ? ' featured' : '');
+        card.dataset.slot = slot.id;
+        card.innerHTML = `
+            <div class="slot-label">
+                <span>${slot.label}</span>
+                <span class="slot-status ${hasImage ? 'uploaded' : 'empty'}">${hasImage ? '● UPLOADED' : '○ EMPTY'}</span>
+            </div>
+            <div class="slot-preview" id="preview-${slot.id}">
+                ${hasImage
+                    ? `<img src="${hasImage}" style="display:block" alt="${slot.label}">`
+                    : `<div class="placeholder-icon">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                        <span>Drag photo here or click Upload</span>
+                    </div>`
+                }
+                <div class="upload-progress" id="progress-${slot.id}"></div>
+            </div>
+            <div class="slot-actions">
+                <label>
+                    Upload
+                    <input type="file" accept="image/*" onchange="handleUpload('${slot.id}', this.files[0])">
+                </label>
+                <button class="delete-btn" onclick="handleDelete('${slot.id}')" ${!hasImage ? 'disabled style="opacity:0.2;cursor:default"' : ''}>Remove</button>
+            </div>
+        `;
+
+        // Drag and drop
+        card.addEventListener('dragover', e => { e.preventDefault(); card.classList.add('drag-over'); });
+        card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
+        card.addEventListener('drop', e => {
+            e.preventDefault();
+            card.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                handleUpload(slot.id, file);
+            }
+        });
+
+        container.appendChild(card);
+    });
+}
+
+// Compress image in browser before uploading (Vercel free plan has 4.5MB body limit)
+function compressImage(file, maxWidth, maxHeight, quality) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+            URL.revokeObjectURL(url);
+            let w = img.width, h = img.height;
+            // Scale down if needed
+            if (w > maxWidth || h > maxHeight) {
+                const ratio = Math.min(maxWidth / w, maxHeight / h);
+                w = Math.round(w * ratio);
+                h = Math.round(h * ratio);
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            canvas.toBlob((blob) => {
+                resolve(blob);
+            }, 'image/jpeg', quality);
+        };
+        img.src = url;
+    });
+}
+
+async function handleUpload(slotId, file) {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+        showToast('Please upload an image file', 'error');
+        return;
+    }
+    if (file.size > 100 * 1024 * 1024) {
+        showToast('Image must be under 100MB', 'error');
+        return;
+    }
+
+    const progress = document.getElementById(`progress-${slotId}`);
+    progress.style.width = '10%';
+
+    try {
+        // Client-side compression first (Vercel has 4.5MB body limit)
+        let uploadBlob = file;
+        const originalSize = file.size;
+        const WIDE_SLOTS = ['wedding-featured', 'wedding-film'];
+        const maxW = WIDE_SLOTS.includes(slotId) ? 2400 : 1920;
+        const maxH = WIDE_SLOTS.includes(slotId) ? 1600 : 1280;
+
+        if (file.size > 3 * 1024 * 1024) {
+            showToast('Compressing image before upload...', 'success');
+            // Start with good quality, reduce if still too large
+            let quality = 0.85;
+            uploadBlob = await compressImage(file, maxW, maxH, quality);
+            // If still over 4MB, compress harder
+            while (uploadBlob.size > 3.5 * 1024 * 1024 && quality > 0.3) {
+                quality -= 0.15;
+                uploadBlob = await compressImage(file, maxW, maxH, quality);
+            }
+        }
+
+        progress.style.width = '40%';
+
+        const response = await fetch(`/api/upload?slot=${slotId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'image/jpeg',
+                'Authorization': `Bearer ${authToken}`
+            },
+            body: uploadBlob
+        });
+
+        progress.style.width = '90%';
+        const data = await response.json();
+
+        if (data.success) {
+            progress.style.width = '100%';
+            currentImages[slotId] = data.url;
+            const origKB = Math.round(originalSize / 1024);
+            const compKB = Math.round(data.compressedSize / 1024);
+            const savings = Math.round((1 - data.compressedSize / originalSize) * 100);
+            setTimeout(() => {
+                renderSlots();
+                showToast(`${slotId} uploaded! ${origKB}KB → ${compKB}KB (saved ${savings}%)`, 'success');
+            }, 300);
+        } else {
+            progress.style.width = '0';
+            showToast(data.error || 'Upload failed', 'error');
+        }
+    } catch (err) {
+        progress.style.width = '0';
+        showToast('Upload failed: ' + err.message, 'error');
+    }
+}
+
+async function handleDelete(slotId) {
+    if (!confirm(`Remove the photo from "${slotId}"? The placeholder will show instead.`)) return;
+
+    try {
+        const response = await fetch(`/api/delete?slot=${slotId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            delete currentImages[slotId];
+            renderSlots();
+            showToast(`${slotId} removed`, 'success');
+        } else {
+            showToast(data.error || 'Delete failed', 'error');
+        }
+    } catch (err) {
+        showToast('Delete failed: ' + err.message, 'error');
+    }
+}
+
+function showToast(message, type) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = 'toast show ' + (type || '');
+    setTimeout(() => toast.className = 'toast', 3000);
+}
+
+// Load images on page load (if returning with stored session)
+fetch('/api/images').then(r => r.json()).then(data => {
+    if (data.images) currentImages = data.images;
+}).catch(() => {});
+</script>
+</body>
+</html>

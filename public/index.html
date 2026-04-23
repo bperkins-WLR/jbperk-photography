@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JBPerk Photography</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Slab:ital,wght@0,100..700;1,100..700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-card: #1a1a1a;
+            --bg-card-hover: #222222;
+            --text-primary: #e8e8e8;
+            --text-secondary: #999999;
+            --text-accent: #c9a96e;
+            --text-accent-light: #d4b87a;
+            --border-subtle: #2a2a2a;
+            --transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ===== NAVIGATION ===== */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            padding: 1.2rem 2.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+            background: linear-gradient(to bottom, rgba(10,10,10,0.97), rgba(10,10,10,0.6));
+            transition: var(--transition);
+        }
+        nav.scrolled {
+            background: rgba(10,10,10,0.98);
+            padding: 0.8rem 2.5rem;
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .nav-logo svg { height: 50px; width: auto; transition: var(--transition); }
+        nav.scrolled .nav-logo svg { height: 38px; }
+
+        .nav-links {
+            display: flex; list-style: none; gap: 1.8rem; align-items: center;
+        }
+        .nav-links a {
+            text-decoration: none; color: var(--text-primary);
+            font-family: 'Josefin Slab', serif; font-size: 0.8rem; font-weight: 400;
+            letter-spacing: 2.5px; text-transform: uppercase;
+            position: relative; padding-bottom: 4px; white-space: nowrap;
+        }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: 0; left: 0;
+            width: 0; height: 1px; background: var(--text-accent);
+            transition: var(--transition);
+        }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+        .nav-links a:hover { color: var(--text-accent); }
+
+        .nav-links .book-btn {
+            background: var(--text-accent); color: var(--bg-primary) !important;
+            padding: 8px 20px; letter-spacing: 2px; font-weight: 500;
+        }
+        .nav-links .book-btn::after { display: none; }
+        .nav-links .book-btn:hover {
+            background: var(--text-accent-light);
+            color: var(--bg-primary) !important;
+        }
+
+        /* Hamburger */
+        .hamburger { display: none; flex-direction: column; cursor: pointer; gap: 6px; z-index: 1001; }
+        .hamburger span { width: 28px; height: 1px; background: var(--text-primary); transition: var(--transition); }
+
+        /* ===== HERO ===== */
+        #home {
+            height: 100vh; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; text-align: center;
+            position: relative; background: var(--bg-primary); overflow: hidden;
+        }
+        #home::before {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(ellipse at center, rgba(201,169,110,0.03) 0%, transparent 70%);
+        }
+        .hero-content { position: relative; z-index: 1; animation: fadeInUp 1.2s ease-out; display: flex; flex-direction: column; align-items: center; }
+        .hero-logo { width: 600px; margin-bottom: 2rem; opacity: 0.95; filter: drop-shadow(0 0 30px rgba(201,169,110,0.15)); display: block; }
+
+        /* Camera flash overlay */
+        .camera-flash {
+            position: fixed; inset: 0; z-index: 9999;
+            background: radial-gradient(circle at 50% 50%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.9) 20%, rgba(255,248,230,0.6) 40%, rgba(201,169,110,0.2) 60%, transparent 80%);
+            pointer-events: none;
+            animation: cameraFlash 1.4s ease-out 1.0s both;
+        }
+        @keyframes cameraFlash {
+            0% { opacity: 0; }
+            8% { opacity: 1; }
+            15% { opacity: 0.95; }
+            30% { opacity: 0.4; }
+            50% { opacity: 0.08; }
+            100% { opacity: 0; display: none; }
+        }
+        .hero-tagline {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem; font-weight: 300; font-style: italic;
+            color: var(--text-secondary); letter-spacing: 4px; margin-bottom: 1rem;
+        }
+        .hero-services {
+            font-family: 'Josefin Slab', serif; font-size: 0.75rem;
+            letter-spacing: 5px; text-transform: uppercase;
+            color: var(--text-accent); margin-bottom: 3rem; opacity: 0.8;
+        }
+        .hero-cta {
+            display: inline-block; padding: 14px 40px;
+            border: 1px solid var(--text-accent); color: var(--text-accent);
+            text-decoration: none; font-family: 'Josefin Slab', serif;
+            font-size: 0.8rem; letter-spacing: 4px; text-transform: uppercase;
+            transition: var(--transition);
+        }
+        .hero-cta:hover { background: var(--text-accent); color: var(--bg-primary); }
+
+        .scroll-indicator {
+            position: absolute; bottom: 2rem; left: 50%;
+            transform: translateX(-50%); animation: bounce 2s infinite;
+        }
+        .scroll-indicator span {
+            display: block; width: 1px; height: 50px;
+            background: linear-gradient(to bottom, var(--text-accent), transparent);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        /* ===== COMMON SECTION ===== */
+        section { padding: 7rem 3rem; }
+        .section-header { text-align: center; margin-bottom: 4rem; }
+        .section-header h2 {
+            font-family: 'Josefin Slab', serif; font-size: 2.4rem; font-weight: 300;
+            letter-spacing: 6px; text-transform: uppercase; margin-bottom: 1rem;
+        }
+        .section-header .divider {
+            width: 60px; height: 1px; background: var(--text-accent);
+            margin: 0 auto 1.5rem;
+        }
+        .section-header p {
+            color: var(--text-secondary); font-size: 1.1rem; font-style: italic;
+            max-width: 600px; margin: 0 auto;
+        }
+        .alt-bg { background: var(--bg-secondary); }
+
+        /* ===== WEDDINGS ===== */
+        .category-intro {
+            max-width: 800px; margin: 0 auto 3.5rem; text-align: center;
+        }
+        .category-intro p {
+            color: var(--text-secondary); font-size: 1.15rem; line-height: 1.9;
+        }
+
+        .photo-grid {
+            display: grid; gap: 6px; max-width: 1200px; margin: 0 auto;
+        }
+        .photo-grid.wedding-grid {
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: auto auto;
+        }
+        .photo-grid.portrait-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .photo-item {
+            position: relative; overflow: hidden; cursor: pointer;
+            background: var(--bg-card); aspect-ratio: 1;
+        }
+        .photo-item.wide { aspect-ratio: 2/1; grid-column: span 2; }
+        .photo-item.tall { aspect-ratio: 1/1.4; grid-row: span 2; }
+        .photo-item.featured { grid-column: span 2; grid-row: span 2; aspect-ratio: 1; }
+
+        .photo-item img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .photo-item:hover img { transform: scale(1.06); }
+
+        .photo-item .overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent 60%);
+            display: flex; align-items: flex-end; justify-content: center;
+            padding-bottom: 1.5rem; opacity: 0; transition: var(--transition);
+        }
+        .photo-item:hover .overlay { opacity: 1; }
+        .photo-item .overlay span {
+            font-family: 'Josefin Slab', serif; font-size: 0.75rem;
+            letter-spacing: 3px; text-transform: uppercase; color: var(--text-accent);
+        }
+
+        /* Placeholder for photos */
+        .photo-placeholder {
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            background: linear-gradient(135deg, #1a1a1a, #252525);
+            color: var(--text-secondary);
+            font-family: 'Josefin Slab', serif;
+            letter-spacing: 2px; text-transform: uppercase; font-size: 0.7rem;
+        }
+        .photo-placeholder svg {
+            width: 36px; height: 36px; margin-bottom: 10px; opacity: 0.25;
+        }
+
+        .section-cta {
+            text-align: center; margin-top: 3rem;
+        }
+        .section-cta a {
+            display: inline-block; padding: 12px 36px;
+            border: 1px solid var(--text-accent); color: var(--text-accent);
+            text-decoration: none; font-family: 'Josefin Slab', serif;
+            font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase;
+            transition: var(--transition);
+        }
+        .section-cta a:hover { background: var(--text-accent); color: var(--bg-primary); }
+
+        /* ===== MATTERPORT ===== */
+        .matterport-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 2rem; max-width: 1100px; margin: 0 auto;
+        }
+        .matterport-item {
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            overflow: hidden; transition: var(--transition);
+        }
+        .matterport-item:hover { border-color: var(--text-accent); }
+        .matterport-embed {
+            width: 100%; aspect-ratio: 16/9;
+            background: linear-gradient(135deg, #151515, #1e1e1e);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            color: var(--text-secondary); position: relative;
+        }
+        .matterport-embed svg {
+            width: 50px; height: 50px; opacity: 0.2; margin-bottom: 12px;
+        }
+        .matterport-embed span {
+            font-family: 'Josefin Slab', serif; font-size: 0.75rem;
+            letter-spacing: 2px; text-transform: uppercase;
+        }
+        .matterport-embed .embed-note {
+            font-size: 0.65rem; opacity: 0.5; margin-top: 6px;
+        }
+        .matterport-info {
+            padding: 1.5rem;
+        }
+        .matterport-info h3 {
+            font-family: 'Josefin Slab', serif; font-size: 1.1rem;
+            font-weight: 400; letter-spacing: 2px; margin-bottom: 0.5rem;
+        }
+        .matterport-info p {
+            color: var(--text-secondary); font-size: 0.95rem;
+        }
+
+        .matterport-features {
+            max-width: 900px; margin: 3rem auto 0;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;
+        }
+        .matterport-feature {
+            text-align: center; padding: 2rem 1.5rem;
+        }
+        .matterport-feature svg {
+            width: 40px; height: 40px; margin-bottom: 1rem;
+            stroke: var(--text-accent); opacity: 0.7;
+        }
+        .matterport-feature h4 {
+            font-family: 'Josefin Slab', serif; font-size: 0.85rem;
+            letter-spacing: 2px; text-transform: uppercase;
+            margin-bottom: 0.8rem; font-weight: 400;
+        }
+        .matterport-feature p {
+            color: var(--text-secondary); font-size: 0.9rem; line-height: 1.7;
+        }
+
+        /* ===== ABOUT ===== */
+        .about-content {
+            max-width: 950px; margin: 0 auto;
+            display: grid; grid-template-columns: 1fr 1.3fr;
+            gap: 4rem; align-items: center;
+        }
+        .about-image {
+            aspect-ratio: 3/4;
+            background: linear-gradient(135deg, #1a1a1a, #252525);
+            position: relative; overflow: hidden;
+        }
+        .about-image::after {
+            content: ''; position: absolute; inset: 15px;
+            border: 1px solid var(--text-accent); opacity: 0.3;
+        }
+        .about-image-placeholder {
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            color: var(--text-secondary);
+            font-family: 'Josefin Slab', serif;
+            letter-spacing: 2px; font-size: 0.8rem;
+        }
+        .about-text h3 {
+            font-family: 'Josefin Slab', serif;
+            font-size: 1.7rem; font-weight: 300;
+            letter-spacing: 3px; margin-bottom: 1.5rem;
+        }
+        .about-text p {
+            color: var(--text-secondary); font-size: 1.1rem;
+            line-height: 1.9; margin-bottom: 1.5rem;
+        }
+        .about-text .signature {
+            font-family: 'Josefin Slab', serif;
+            font-size: 1.3rem; color: var(--text-accent);
+            font-style: italic; margin-top: 1rem;
+        }
+
+        /* ===== BOOK ONLINE ===== */
+        .booking-content { max-width: 750px; margin: 0 auto; }
+        .booking-content > p {
+            text-align: center; color: var(--text-secondary);
+            font-size: 1.15rem; line-height: 1.8; margin-bottom: 2.5rem;
+        }
+
+        .booking-form { display: grid; gap: 1.2rem; }
+        .form-row {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem;
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        .form-group label {
+            font-family: 'Josefin Slab', serif; font-size: 0.7rem;
+            letter-spacing: 2px; text-transform: uppercase; color: var(--text-accent);
+        }
+
+        .booking-form input,
+        .booking-form textarea,
+        .booking-form select {
+            width: 100%; padding: 14px 18px;
+            background: var(--bg-primary); border: 1px solid var(--border-subtle);
+            color: var(--text-primary); font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem; transition: var(--transition);
+        }
+        .booking-form input:focus,
+        .booking-form textarea:focus,
+        .booking-form select:focus {
+            outline: none; border-color: var(--text-accent);
+        }
+        .booking-form textarea { height: 130px; resize: vertical; }
+        .booking-form select option { background: var(--bg-primary); }
+
+        .booking-form button {
+            padding: 16px 50px; background: var(--text-accent);
+            border: 1px solid var(--text-accent); color: var(--bg-primary);
+            font-family: 'Josefin Slab', serif; font-size: 0.85rem;
+            letter-spacing: 4px; text-transform: uppercase;
+            cursor: pointer; transition: var(--transition); justify-self: center;
+            font-weight: 500; margin-top: 0.5rem;
+        }
+        .booking-form button:hover {
+            background: transparent; color: var(--text-accent);
+        }
+
+        /* ===== CONTACT ===== */
+        .contact-content { max-width: 700px; margin: 0 auto; text-align: center; }
+        .contact-content > p {
+            color: var(--text-secondary); font-size: 1.15rem;
+            line-height: 1.8; margin-bottom: 2.5rem;
+        }
+        .contact-form { display: grid; gap: 1.2rem; }
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%; padding: 14px 18px;
+            background: var(--bg-primary); border: 1px solid var(--border-subtle);
+            color: var(--text-primary); font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem; transition: var(--transition);
+        }
+        .contact-form input:focus,
+        .contact-form textarea:focus { outline: none; border-color: var(--text-accent); }
+        .contact-form textarea { height: 130px; resize: vertical; }
+        .contact-form button {
+            padding: 14px 44px; background: transparent;
+            border: 1px solid var(--text-accent); color: var(--text-accent);
+            font-family: 'Josefin Slab', serif; font-size: 0.85rem;
+            letter-spacing: 4px; text-transform: uppercase;
+            cursor: pointer; transition: var(--transition); justify-self: center;
+        }
+        .contact-form button:hover { background: var(--text-accent); color: var(--bg-primary); }
+
+        .contact-info {
+            margin-top: 3rem; display: flex;
+            justify-content: center; gap: 3rem; flex-wrap: wrap;
+        }
+        .contact-info-item { text-align: center; }
+        .contact-info-item .label {
+            font-family: 'Josefin Slab', serif; font-size: 0.7rem;
+            letter-spacing: 3px; text-transform: uppercase;
+            color: var(--text-accent); margin-bottom: 0.5rem;
+        }
+        .contact-info-item .value { color: var(--text-secondary); font-size: 1rem; }
+        .contact-info-item .value a {
+            color: var(--text-secondary); text-decoration: none; transition: var(--transition);
+        }
+        .contact-info-item .value a:hover { color: var(--text-accent); }
+
+        /* ===== PRICING ===== */
+        .pricing-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem; max-width: 1100px; margin: 0 auto;
+        }
+        .pricing-card {
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            padding: 2.5rem 2rem; text-align: center;
+            transition: var(--transition); position: relative;
+        }
+        .pricing-card:hover {
+            border-color: var(--text-accent);
+            transform: translateY(-4px);
+        }
+        .pricing-card.featured {
+            border-color: var(--text-accent);
+        }
+        .pricing-card.featured::before {
+            content: 'MOST POPULAR';
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            background: var(--text-accent); color: var(--bg-primary);
+            font-family: 'Josefin Slab', serif; font-size: 0.6rem;
+            letter-spacing: 2px; padding: 4px 16px; white-space: nowrap;
+        }
+        .pricing-card h3 {
+            font-family: 'Josefin Slab', serif; font-size: 1rem;
+            font-weight: 400; letter-spacing: 3px; text-transform: uppercase;
+            margin-bottom: 1.2rem; color: var(--text-accent);
+        }
+        .pricing-card .price {
+            font-family: 'Josefin Slab', serif; font-size: 2.2rem;
+            font-weight: 300; margin-bottom: 0.3rem;
+        }
+        .pricing-card .price-note {
+            font-size: 0.85rem; color: var(--text-secondary);
+            font-style: italic; margin-bottom: 1.5rem;
+        }
+        .pricing-card .features {
+            list-style: none; margin-bottom: 2rem; text-align: left;
+        }
+        .pricing-card .features li {
+            padding: 0.5rem 0; border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-secondary); font-size: 0.95rem;
+            display: flex; align-items: baseline; gap: 0.6rem;
+        }
+        .pricing-card .features li::before {
+            content: '\2022'; color: var(--text-accent); font-size: 0.7rem;
+            flex-shrink: 0;
+        }
+        .pricing-card .pricing-cta {
+            display: inline-block; padding: 10px 30px;
+            border: 1px solid var(--text-accent); color: var(--text-accent);
+            text-decoration: none; font-family: 'Josefin Slab', serif;
+            font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase;
+            transition: var(--transition);
+        }
+        .pricing-card .pricing-cta:hover {
+            background: var(--text-accent); color: var(--bg-primary);
+        }
+        .pricing-card.featured .pricing-cta {
+            background: var(--text-accent); color: var(--bg-primary);
+        }
+        .pricing-card.featured .pricing-cta:hover {
+            background: transparent; color: var(--text-accent);
+        }
+        .pricing-note {
+            text-align: center; margin-top: 2.5rem;
+            color: var(--text-secondary); font-size: 0.95rem;
+            font-style: italic; max-width: 600px; margin-left: auto; margin-right: auto;
+        }
+
+        @media (max-width: 768px) {
+            .pricing-grid { grid-template-columns: 1fr; max-width: 400px; }
+        }
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: var(--bg-primary); padding: 3rem;
+            text-align: center; border-top: 1px solid var(--border-subtle);
+        }
+        .footer-logo svg { height: 45px; width: auto; opacity: 0.5; margin-bottom: 1.5rem; }
+        footer p {
+            color: var(--text-secondary); font-size: 0.8rem;
+            letter-spacing: 2px; font-family: 'Josefin Slab', serif;
+        }
+
+        /* ===== LIGHTBOX ===== */
+        .lightbox {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.95); z-index: 2000;
+            align-items: center; justify-content: center; cursor: pointer;
+        }
+        .lightbox.active { display: flex; }
+        .lightbox img { max-width: 90%; max-height: 90vh; object-fit: contain; }
+        .lightbox-close {
+            position: absolute; top: 2rem; right: 2rem;
+            color: var(--text-primary); font-size: 2rem; cursor: pointer;
+            font-family: 'Josefin Slab', serif; font-weight: 300;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .nav-links { gap: 1.2rem; }
+            .nav-links a { font-size: 0.7rem; letter-spacing: 1.5px; }
+            .matterport-grid { grid-template-columns: 1fr; }
+            .matterport-features { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            nav { padding: 1rem 1.5rem; }
+            .hamburger { display: flex; }
+            .nav-links {
+                position: fixed; top: 0; right: -100%; height: 100vh; width: 100%;
+                background: var(--bg-primary); flex-direction: column;
+                justify-content: center; align-items: center;
+                transition: var(--transition); gap: 2rem;
+            }
+            .nav-links.open { right: 0; }
+            .nav-links a { font-size: 1rem; letter-spacing: 3px; }
+            .hero-logo { width: 90vw; max-width: 500px; }
+            .hero-tagline { font-size: 1rem; padding: 0 1rem; }
+            section { padding: 5rem 1.5rem; }
+            .section-header h2 { font-size: 1.6rem; letter-spacing: 4px; }
+            .photo-grid.wedding-grid { grid-template-columns: repeat(2, 1fr); }
+            .photo-grid.portrait-grid { grid-template-columns: repeat(2, 1fr); }
+            .photo-item.featured { grid-column: span 2; grid-row: span 1; aspect-ratio: 16/9; }
+            .photo-item.wide { grid-column: span 2; }
+            .about-content { grid-template-columns: 1fr; gap: 2rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .contact-info { flex-direction: column; gap: 1.5rem; }
+            .matterport-features { grid-template-columns: 1fr; }
+        }
+
+        /* ===== ANIMATIONS & EFFECTS ===== */
+
+        /* Floating bokeh particles on hero */
+        #hero-particles {
+            position: absolute; inset: 0; z-index: 0; overflow: hidden;
+        }
+        .particle {
+            position: absolute; border-radius: 50%;
+            background: radial-gradient(circle, rgba(201,169,110,0.3), transparent 70%);
+            animation: floatParticle linear infinite;
+            pointer-events: none;
+        }
+        @keyframes floatParticle {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-20vh) scale(1); opacity: 0; }
+        }
+
+        /* Hero elements staggered entrance */
+        .hero-logo {
+            animation: logoGrandEntrance 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both,
+                       logoFloat 6s ease-in-out 3s infinite,
+                       logoGlow 4s ease-in-out 2.5s infinite;
+        }
+        .hero-tagline { animation: heroReveal 1.2s ease-out 1.2s both; }
+        .hero-services { animation: heroReveal 1s ease-out 1.6s both; }
+        .hero-cta { animation: heroReveal 1s ease-out 2s both; }
+        .scroll-indicator { animation: heroReveal 1s ease-out 2.5s both, bounce 2s infinite 3.5s; }
+
+        @keyframes heroReveal {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Grand logo entrance — scale up from nothing with a cinematic feel */
+        @keyframes logoGrandEntrance {
+            0% { opacity: 0; transform: scale(0.3) translateY(40px); filter: drop-shadow(0 0 0px rgba(201,169,110,0)); }
+            40% { opacity: 1; transform: scale(1.08) translateY(-5px); filter: drop-shadow(0 0 40px rgba(201,169,110,0.4)); }
+            65% { transform: scale(0.97) translateY(2px); filter: drop-shadow(0 0 20px rgba(201,169,110,0.2)); }
+            100% { opacity: 1; transform: scale(1) translateY(0); filter: drop-shadow(0 0 30px rgba(201,169,110,0.15)); }
+        }
+
+        /* Subtle floating motion */
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* Pulsing golden glow */
+        @keyframes logoGlow {
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(201,169,110,0.1)); }
+            50% { filter: drop-shadow(0 0 40px rgba(201,169,110,0.3)); }
+        }
+
+        /* SVG internal animations */
+        .hero-logo .lens-outer { animation: lensRotate 20s linear infinite; transform-origin: 65px 67px; }
+        .hero-logo .lens-ring { animation: lensPulse 3s ease-in-out infinite; }
+        .hero-logo .lens-flare { animation: flarePulse 4s ease-in-out infinite; }
+        .hero-logo .camera-body { animation: cameraDrawOn 1.5s ease-out 0.3s both; }
+        .hero-logo .viewfinder { animation: cameraDrawOn 1.2s ease-out 0.6s both; }
+        .hero-logo .gold-line { animation: lineExpand 1s ease-out 1.4s both; }
+        .hero-logo .red-accent { animation: redPulse 3s ease-in-out 2s infinite; }
+
+        @keyframes lensRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes lensPulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        @keyframes flarePulse {
+            0%, 100% { opacity: 0.15; r: 1.5; }
+            50% { opacity: 0.5; r: 2.5; }
+        }
+        @keyframes cameraDrawOn {
+            from { stroke-dashoffset: 200; opacity: 0; }
+            to { stroke-dashoffset: 0; opacity: 1; }
+        }
+        @keyframes lineExpand {
+            from { x2: 120; opacity: 0; }
+            to { x2: 310; opacity: 0.5; }
+        }
+        @keyframes redPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* Gold shimmer on accent text */
+        .hero-services {
+            background: linear-gradient(
+                90deg,
+                var(--text-accent) 0%,
+                #f0d99c 25%,
+                var(--text-accent) 50%,
+                #f0d99c 75%,
+                var(--text-accent) 100%
+            );
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: heroReveal 1s ease-out 0.9s both, shimmer 4s linear infinite 2s;
+        }
+        @keyframes shimmer {
+            to { background-position: 200% center; }
+        }
+
+        /* Hero CTA pulse glow */
+        .hero-cta {
+            position: relative; overflow: hidden;
+        }
+        .hero-cta::before {
+            content: ''; position: absolute; inset: -2px;
+            background: linear-gradient(45deg, transparent, rgba(201,169,110,0.15), transparent);
+            animation: ctaSweep 3s ease-in-out infinite 2s;
+        }
+        @keyframes ctaSweep {
+            0% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+            100% { transform: translateX(100%); }
+        }
+        .hero-cta:hover { box-shadow: 0 0 30px rgba(201,169,110,0.3); }
+
+        /* Section header animated divider */
+        .section-header .divider {
+            transition: width 1s ease;
+            width: 0;
+        }
+        .section-header.visible .divider {
+            width: 60px;
+        }
+
+        /* Scroll-triggered fade variants */
+        .fade-in {
+            opacity: 0; transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+        .fade-in-left {
+            opacity: 0; transform: translateX(-40px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .fade-in-left.visible { opacity: 1; transform: translateX(0); }
+
+        .fade-in-right {
+            opacity: 0; transform: translateX(40px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .fade-in-right.visible { opacity: 1; transform: translateX(0); }
+
+        .scale-in {
+            opacity: 0; transform: scale(0.9);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .scale-in.visible { opacity: 1; transform: scale(1); }
+
+        /* Photo item hover glow */
+        .photo-item::after {
+            content: ''; position: absolute; inset: 0;
+            box-shadow: inset 0 0 0 0 rgba(201,169,110,0);
+            transition: box-shadow 0.5s ease;
+            pointer-events: none;
+        }
+        .photo-item:hover::after {
+            box-shadow: inset 0 0 40px rgba(201,169,110,0.15);
+        }
+
+        /* Pricing card hover glow */
+        .pricing-card:hover {
+            box-shadow: 0 0 40px rgba(201,169,110,0.08);
+        }
+
+        /* Matterport item hover glow */
+        .matterport-item:hover {
+            box-shadow: 0 0 30px rgba(201,169,110,0.08);
+        }
+
+        /* Nav link hover glow */
+        .nav-links a:hover {
+            text-shadow: 0 0 15px rgba(201,169,110,0.3);
+        }
+
+        /* Smooth parallax for sections */
+        .parallax-bg {
+            transition: transform 0.1s linear;
+            will-change: transform;
+        }
+
+        /* About image subtle float - only after fade-in completes */
+        .about-image.visible {
+            animation: subtleFloat 6s ease-in-out infinite 0.8s;
+        }
+        @keyframes subtleFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* Section header h2 letter spacing animation */
+        .section-header h2 {
+            transition: letter-spacing 0.6s ease;
+        }
+        .section-header.visible h2 {
+            letter-spacing: 8px;
+        }
+
+        /* Scroll progress bar */
+        .scroll-progress {
+            position: fixed; top: 0; left: 0; height: 2px;
+            background: linear-gradient(90deg, var(--text-accent), var(--text-accent-light));
+            z-index: 1001; width: 0;
+            transition: width 0.1s linear;
+        }
+
+        /* Button ripple effect */
+        .ripple {
+            position: absolute; border-radius: 50%;
+            background: rgba(201,169,110,0.3);
+            transform: scale(0); animation: rippleEffect 0.6s linear;
+            pointer-events: none;
+        }
+        @keyframes rippleEffect {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        /* SVG icon helper */
+        .icon-camera { stroke: currentColor; fill: none; stroke-width: 1; }
+    </style>
+</head>
+<body>
+<!-- Camera flash on page load -->
+<div class="camera-flash" id="camera-flash"></div>
+<div class="scroll-progress" id="scroll-progress"></div>
+
+<!-- Navigation -->
+<nav id="navbar">
+    <a href="#home" class="nav-logo">
+        <svg viewBox="0 0 520 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="JBPerk Photography"><g transform="translate(65, 65)"><rect x="-30" y="-22" width="60" height="44" rx="2" fill="none" stroke="#c9a96e" stroke-width="1.2"/><path d="M-18,-22 L-18,-32 L-12,-36 L12,-36 L18,-32 L18,-22" fill="none" stroke="#c9a96e" stroke-width="1"/><rect x="-10" y="-35" width="20" height="4" rx="1" fill="none" stroke="#c9a96e" stroke-width="0.6" opacity="0.5"/><circle cx="0" cy="2" r="16" fill="none" stroke="#c9a96e" stroke-width="1.2"/><circle cx="0" cy="2" r="11" fill="none" stroke="#c9a96e" stroke-width="0.7" opacity="0.6"/><circle cx="0" cy="2" r="6" fill="none" stroke="#c9a96e" stroke-width="0.5" opacity="0.4"/><circle cx="-3" cy="-1" r="1.5" fill="#c9a96e" opacity="0.25"/><line x1="24" y1="-18" x2="24" y2="18" stroke="#c9a96e" stroke-width="0.4" opacity="0.3"/><line x1="27" y1="-18" x2="27" y2="18" stroke="#c9a96e" stroke-width="0.4" opacity="0.3"/><circle cx="-30" cy="-10" r="4" fill="none" stroke="#c9a96e" stroke-width="0.8" opacity="0.5"/><line x1="-30" y1="-14" x2="-30" y2="-10" stroke="#c9a96e" stroke-width="0.6" opacity="0.5"/></g><text x="120" y="58" font-family="Cormorant Garamond, Georgia, serif" font-size="42" letter-spacing="2"><tspan font-weight="400" fill="#e8e8e8">JB</tspan><tspan font-weight="300" fill="#c9a96e">Perk</tspan></text><line x1="120" y1="68" x2="310" y2="68" stroke="#c9a96e" stroke-width="0.5" opacity="0.5"/><text x="120" y="88" font-family="Cormorant Garamond, Georgia, serif" font-size="14" font-weight="300" fill="#777777" letter-spacing="7">PHOTOGRAPHY</text></svg>
+    </a>
+    <ul class="nav-links" id="nav-links">
+        <li><a href="#home" class="active">Home</a></li>
+        <li><a href="#weddings">Weddings</a></li>
+        <li><a href="#portraits">Portraits</a></li>
+        <li><a href="#matterport">3D/VR</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="#book" class="book-btn">Book Online</a></li>
+    </ul>
+    <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section id="home">
+    <div id="hero-particles"></div>
+    <div class="hero-content">
+        <svg viewBox="20 0 300 115" class="hero-logo" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="JBPerk Photography">
+                <!-- Camera body -->
+                <g transform="translate(65, 65)">
+                    <rect class="camera-body" x="-30" y="-22" width="60" height="44" rx="2" fill="none" stroke="#c9a96e" stroke-width="1.2" stroke-dasharray="200"/>
+                    <!-- Viewfinder -->
+                    <path class="viewfinder" d="M-18,-22 L-18,-32 L-12,-36 L12,-36 L18,-32 L18,-22" fill="none" stroke="#c9a96e" stroke-width="1" stroke-dasharray="200"/>
+                    <rect x="-10" y="-35" width="20" height="4" rx="1" fill="none" stroke="#c9a96e" stroke-width="0.6" opacity="0.5"/>
+                    <!-- Lens rings with rotation -->
+                    <g class="lens-outer">
+                        <circle cx="0" cy="2" r="16" fill="none" stroke="#c9a96e" stroke-width="1.2"/>
+                    </g>
+                    <circle class="lens-ring" cx="0" cy="2" r="11" fill="none" stroke="#c9a96e" stroke-width="0.7" opacity="0.6"/>
+                    <circle cx="0" cy="2" r="6" fill="none" stroke="#c9a96e" stroke-width="0.5" opacity="0.4"/>
+                    <!-- Animated lens flare -->
+                    <circle class="lens-flare" cx="-3" cy="-1" r="1.5" fill="#c9a96e" opacity="0.25"/>
+                    <!-- Film back lines -->
+                    <line x1="24" y1="-18" x2="24" y2="18" stroke="#c9a96e" stroke-width="0.4" opacity="0.3"/>
+                    <line x1="27" y1="-18" x2="27" y2="18" stroke="#c9a96e" stroke-width="0.4" opacity="0.3"/>
+                    <!-- Side crank -->
+                    <circle cx="-30" cy="-10" r="4" fill="none" stroke="#c9a96e" stroke-width="0.8" opacity="0.5"/>
+                    <line x1="-30" y1="-14" x2="-30" y2="-10" stroke="#c9a96e" stroke-width="0.6" opacity="0.5"/>
+                    <!-- Camera flash burst from lens -->
+                    <circle class="flash-burst" cx="0" cy="2" r="3" fill="white" opacity="0">
+                        <animate attributeName="r" values="3;80" dur="0.6s" begin="1.0s" fill="freeze"/>
+                        <animate attributeName="opacity" values="0;0.9;0" dur="0.6s" begin="1.0s" fill="freeze"/>
+                    </circle>
+                    <circle class="flash-core" cx="0" cy="2" r="2" fill="white" opacity="0">
+                        <animate attributeName="r" values="2;20" dur="0.4s" begin="1.0s" fill="freeze"/>
+                        <animate attributeName="opacity" values="0;1;0" dur="0.4s" begin="1.0s" fill="freeze"/>
+                    </circle>
+                </g>
+                <!-- Two-tone wordmark -->
+                <text x="120" y="58" font-family="Cormorant Garamond, Georgia, serif" font-size="42" letter-spacing="2">
+                    <tspan font-weight="400" fill="#e8e8e8">JB</tspan><tspan font-weight="300" fill="#c9a96e">Perk</tspan>
+                </text>
+                <!-- Gold divider -->
+                <line class="gold-line" x1="120" y1="68" x2="310" y2="68" stroke="#c9a96e" stroke-width="0.5" opacity="0.5"/>
+                <text x="120" y="88" font-family="Cormorant Garamond, Georgia, serif" font-size="14" font-weight="300" fill="#777777" letter-spacing="7">PHOTOGRAPHY</text>
+                <!-- RED accent -->
+                <rect class="red-accent" x="120" y="98" width="16" height="3" rx="0.5" fill="#8b1a1a" opacity="0.7"/>
+                <text x="140" y="101" font-family="Josefin Slab, serif" font-size="7" fill="#555" letter-spacing="2"> PHOTO + CINEMA</text>
+            </svg>
+        <p class="hero-tagline">Capturing moments that last forever</p>
+        <p class="hero-services">Weddings &middot; Wedding Films &middot; Portraits &middot; Matterport 3D/VR</p>
+        <a href="#book" class="hero-cta">Book a Session</a>
+    </div>
+    <div class="scroll-indicator"><span></span></div>
+</section>
+
+<!-- Weddings -->
+<section id="weddings" class="alt-bg">
+    <div class="section-header fade-in">
+        <h2>Weddings</h2>
+        <div class="divider"></div>
+        <p>Your love story, told through timeless imagery and cinematic film</p>
+    </div>
+    <div class="category-intro fade-in">
+        <p>From the quiet nerves before the ceremony to the joy on the dance floor, I'm there to capture every genuine moment &mdash; in both stunning photography and cinematic wedding films. My unobtrusive approach means you can be fully present while I preserve the magic of your day.</p>
+    </div>
+    <div class="photo-grid wedding-grid">
+        <div class="photo-item featured fade-in" data-slot="wedding-featured">
+            <div class="photo-placeholder">
+                <svg viewBox="0 0 24 24" class="icon-camera"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                Featured wedding photo
+            </div>
+            <div class="overlay"><span>View</span></div>
+        </div>
+        <div class="photo-item fade-in" data-slot="wedding-ceremony">
+            <div class="photo-placeholder">
+                <svg viewBox="0 0 24 24" class="icon-camera"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                Ceremony
+            </div>
+            <div class="overlay"><span>View</span></div>
+        </div>
+        <div class="photo-item fade-in" data-slot="wedding-reception">
+            <div class="photo-placeholder">
+                <svg viewBox="0 0 24 24" class="icon-camera"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                Reception
+            </div>
+            <div class="overlay"><span>View</span></div>
+        </div>
+        <div class="photo-item fade-in" data-slot="wedding-details">
+            <div class="photo-placeholder">
+                <svg viewBox="0 0 24 24" class="icon-camera"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                Details
+            </div>
+            <div class="overlay"><span>View</span></div>
+        </div>
+        <div class="photo-item fade-in" data-slot="wedding-firstdance">
+            <div class="photo-placeholder">
+                <svg viewBox="0 0 24 24" class="icon-camera"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                First Dance
+            </div>
+            <div class="overlay"><span>View</span></div>
+        </div>
+        <div class="photo-item fade-in" data-slot="wedding-couple">
+            <div class="photo-placeholder">
+                <svg viewBox="0 0 24 24" class="icon-camera"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                Couple Portrait
+            </div>
+            <div class="overlay"><span>View</span></div>
+        </div>
+        <div class="photo-item wide fade-in" data-slot="wedding-film">
+            <div class="photo-placeholder">
+                <svg viewBox="0 0 24 24" class="icon-camera"><polygon points="5 3 19 3 23 7 1 7"/><rect x="1" y="7" width="22" height="14" rx="1"/><circle cx="12" cy="14" r="4"/></svg>
+                Wedding Film Preview
+            </div>
+            <div class="overlay"><span>Watch Film</span></div>
+        </div>
+    </div>
+    <div class="section-cta fade-in">
+        <a href="#book">Book Your Wedding</a>
+    </div>
+</section>
+
+<!-- Portraits -->
+<section id="portraits">
+    <div class="section-header fade-in">
+        <h2>Portraits</h2>
+        <div class="divider"></div>
+        <p>Revealing the authentic you, one frame at a time</p>
+    </div>
+    <div class="category-intro fade-in">
+        <p>Whether you need a professional headshot, senior portraits, family photos, or something creative, I work to make you feel comfortable and confident in front of the lens. The result: images that truly reflect who you are.</p>
+    </div>
+    <div class="photo-grid portrait-grid">
+        <div class="photo-item fade-in" data-slot="portrait-portrait">
+            <div class="photo-placeholder">
+                <svg viewBox="0 0 24 24" class="icon-camera"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Portrait
+            </div>
+            <div class="overlay"><span>View</span></div>
+        </div>
+        <div class="photo-item fade-in" data-slot="portrait-headshot">
+            <div class="photo-placeholder">
+                <svg viewBox="0 0 24 24" class="icon-camera"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Headshot
+            </div>
+            <div class="overlay"><span>View</span></div>
+        </div>
+        <div class="photo-item fade-in" data-slot="portrait-senior">
+            <div class="photo-placeholder">
+                <svg viewBox="0 0 24 24" class="icon-camera"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Senior
+            </div>
+            <div class="overlay"><span>View</span></div>
+        </div>
+        <div class="photo-item fade-in" data-slot="portrait-family">
+            <div class="photo-placeholder">
+                <svg viewBox="0 0 24 24" class="icon-camera"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Family
+            </div>
+            <div class="overlay"><span>View</span></div>
+        </div>
+        <div class="photo-item fade-in" data-slot="portrait-creative">
+            <div class="photo-placeholder">
+                <svg viewBox="0 0 24 24" class="icon-camera"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Creative
+            </div>
+            <div class="overlay"><span>View</span></div>
+        </div>
+        <div class="photo-item fade-in" data-slot="portrait-engagement">
+            <div class="photo-placeholder">
+                <svg viewBox="0 0 24 24" class="icon-camera"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Engagement
+            </div>
+            <div class="overlay"><span>View</span></div>
+        </div>
+    </div>
+    <div class="section-cta fade-in">
+        <a href="#book">Book a Portrait Session</a>
+    </div>
+</section>
+
+<!-- Matterport 3D/VR -->
+<section id="matterport" class="alt-bg">
+    <div class="section-header fade-in">
+        <h2>Matterport 3D/VR</h2>
+        <div class="divider"></div>
+        <p>Immersive 3D experiences for real estate, venues, and businesses</p>
+    </div>
+    <div class="category-intro fade-in">
+        <p>Step inside any space from anywhere in the world. Using Matterport's cutting-edge 3D scanning technology, I create fully interactive virtual tours that let your audience explore every detail as if they were there in person.</p>
+    </div>
+
+    <div class="matterport-grid fade-in">
+        <div class="matterport-item">
+            <div class="matterport-embed">
+                <!-- Replace this div with: <iframe src="YOUR_MATTERPORT_LINK" width="100%" height="100%" frameborder="0" allowfullscreen></iframe> -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                    <line x1="12" y1="22.08" x2="12" y2="12"/>
+                </svg>
+                <span>3D Tour Embed</span>
+                <span class="embed-note">Paste your Matterport link here</span>
+            </div>
+            <div class="matterport-info">
+                <h3>Virtual Tour 1</h3>
+                <p>Property or venue description goes here</p>
+            </div>
+        </div>
+        <div class="matterport-item">
+            <div class="matterport-embed">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                    <line x1="12" y1="22.08" x2="12" y2="12"/>
+                </svg>
+                <span>3D Tour Embed</span>
+                <span class="embed-note">Paste your Matterport link here</span>
+            </div>
+            <div class="matterport-info">
+                <h3>Virtual Tour 2</h3>
+                <p>Property or venue description goes here</p>
+            </div>
+        </div>
+        <div class="matterport-item">
+            <div class="matterport-embed">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                    <line x1="12" y1="22.08" x2="12" y2="12"/>
+                </svg>
+                <span>3D Tour Embed</span>
+                <span class="embed-note">Paste your Matterport link here</span>
+            </div>
+            <div class="matterport-info">
+                <h3>Virtual Tour 3</h3>
+                <p>Property or venue description goes here</p>
+            </div>
+        </div>
+        <div class="matterport-item">
+            <div class="matterport-embed">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                    <line x1="12" y1="22.08" x2="12" y2="12"/>
+                </svg>
+                <span>3D Tour Embed</span>
+                <span class="embed-note">Paste your Matterport link here</span>
+            </div>
+            <div class="matterport-info">
+                <h3>Virtual Tour 4</h3>
+                <p>Property or venue description goes here</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="matterport-features fade-in">
+        <div class="matterport-feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+            </svg>
+            <h4>Immersive 3D</h4>
+            <p>Full 360-degree walkthrough experience that puts viewers inside the space</p>
+        </div>
+        <div class="matterport-feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.2">
+                <rect x="2" y="3" width="20" height="14" rx="2"/>
+                <line x1="8" y1="21" x2="16" y2="21"/>
+                <line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+            <h4>Any Device</h4>
+            <p>Works seamlessly on desktop, tablet, mobile, and VR headsets</p>
+        </div>
+        <div class="matterport-feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            <h4>Real Estate Ready</h4>
+            <p>Perfect for listings, venues, businesses, and property marketing</p>
+        </div>
+    </div>
+
+    <div class="section-cta fade-in" style="margin-top: 3rem;">
+        <a href="#book">Schedule a 3D Scan</a>
+    </div>
+</section>
+
+<!-- About -->
+<section id="about">
+    <div class="section-header fade-in">
+        <h2>About</h2>
+        <div class="divider"></div>
+    </div>
+    <div class="about-content">
+        <div class="about-image fade-in-left">
+            <div class="about-image-placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="width:50px;height:50px;opacity:0.25;margin-bottom:10px">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                Your portrait here
+            </div>
+        </div>
+        <div class="about-text fade-in-right">
+            <h3>The Story Behind the Lens</h3>
+            <p>Every photograph tells a story. As a passionate photographer, I believe in capturing the raw, authentic moments that make life extraordinary. From the quiet intimacy of a portrait to the grandeur of a wedding day, my lens seeks out the beauty in every frame.</p>
+            <p>With years of experience and a dedication to the craft, I bring a unique perspective to every shoot. Whether it's wedding photography and film, a professional headshot, a family celebration, or a Matterport 3D tour, I'm committed to delivering results that exceed expectations.</p>
+            <div class="signature">&mdash; JBPerk</div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing -->
+<section id="pricing" class="alt-bg">
+    <div class="section-header fade-in">
+        <h2>Pricing</h2>
+        <div class="divider"></div>
+        <p>Investment in memories that last a lifetime</p>
+    </div>
+    <div class="pricing-grid">
+        <div class="pricing-card scale-in">
+            <h3>Portraits</h3>
+            <div class="price">$350</div>
+            <div class="price-note">starting at</div>
+            <ul class="features">
+                <li>1-hour session</li>
+                <li>One location</li>
+                <li>25 edited digital images</li>
+                <li>Online gallery</li>
+                <li>Print release included</li>
+            </ul>
+            <a href="#book" class="pricing-cta">Book Now</a>
+        </div>
+        <div class="pricing-card featured scale-in">
+            <h3>Weddings</h3>
+            <div class="price">$3,500</div>
+            <div class="price-note">starting at</div>
+            <ul class="features">
+                <li>Full-day photo &amp; video coverage</li>
+                <li>Cinematic wedding film</li>
+                <li>Second shooter available</li>
+                <li>400+ edited digital images</li>
+                <li>Online gallery &amp; print release</li>
+            </ul>
+            <a href="#book" class="pricing-cta">Book Now</a>
+        </div>
+        <div class="pricing-card scale-in">
+            <h3>Headshots</h3>
+            <div class="price">$250</div>
+            <div class="price-note">starting at</div>
+            <ul class="features">
+                <li>30-minute session</li>
+                <li>Studio or on-location</li>
+                <li>5 retouched images</li>
+                <li>LinkedIn &amp; web optimized</li>
+                <li>Quick turnaround</li>
+            </ul>
+            <a href="#book" class="pricing-cta">Book Now</a>
+        </div>
+        <div class="pricing-card scale-in">
+            <h3>Events</h3>
+            <div class="price">$200</div>
+            <div class="price-note">starting at / per hour</div>
+            <ul class="features">
+                <li>Flexible hourly coverage</li>
+                <li>Corporate &amp; private events</li>
+                <li>All edited images delivered</li>
+                <li>Online gallery</li>
+                <li>Fast delivery</li>
+            </ul>
+            <a href="#book" class="pricing-cta">Book Now</a>
+        </div>
+        <div class="pricing-card scale-in">
+            <h3>Engagements</h3>
+            <div class="price">$450</div>
+            <div class="price-note">starting at</div>
+            <ul class="features">
+                <li>1-hour session</li>
+                <li>One or two locations</li>
+                <li>30 edited digital images</li>
+                <li>Save-the-date ready</li>
+                <li>Print release included</li>
+            </ul>
+            <a href="#book" class="pricing-cta">Book Now</a>
+        </div>
+        <div class="pricing-card scale-in">
+            <h3>Matterport 3D/VR</h3>
+            <div class="price">$350</div>
+            <div class="price-note">starting at</div>
+            <ul class="features">
+                <li>Full property scan</li>
+                <li>Interactive 3D walkthrough</li>
+                <li>Hosted Matterport link</li>
+                <li>Floor plans available</li>
+                <li>Embed code for your site</li>
+            </ul>
+            <a href="#book" class="pricing-cta">Book Now</a>
+        </div>
+    </div>
+    <p class="pricing-note fade-in">Every project is unique. Prices reflect starting rates &mdash; <a href="#contact" style="color: var(--text-accent); text-decoration: none;">reach out</a> for a custom quote tailored to your needs.</p>
+</section>
+
+<!-- Book Online -->
+<section id="book">
+    <div class="section-header fade-in">
+        <h2>Book Online</h2>
+        <div class="divider"></div>
+        <p>Ready to create something beautiful? Let's get started.</p>
+    </div>
+    <div class="booking-content fade-in">
+        <form class="booking-form" onsubmit="handleBooking(event)">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>First Name</label>
+                    <input type="text" name="firstName" placeholder="Your first name" required>
+                </div>
+                <div class="form-group">
+                    <label>Last Name</label>
+                    <input type="text" name="lastName" placeholder="Your last name" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" placeholder="your@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" name="phone" placeholder="(000) 000-0000">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Session Type</label>
+                    <select name="sessionType" required>
+                        <option value="" disabled selected>Select a session</option>
+                        <option value="wedding-photo">Wedding Photography</option>
+                        <option value="wedding-video">Wedding Videography</option>
+                        <option value="wedding-both">Wedding Photo + Video</option>
+                        <option value="engagement">Engagement Session</option>
+                        <option value="portrait">Portrait Session</option>
+                        <option value="headshot">Professional Headshot</option>
+                        <option value="family">Family Session</option>
+                        <option value="senior">Senior Portraits</option>
+                        <option value="event">Event Coverage</option>
+                        <option value="matterport">Matterport 3D/VR Scan</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Preferred Date</label>
+                    <input type="date" name="preferredDate">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Location / Venue</label>
+                <input type="text" name="location" placeholder="Where will the session take place?">
+            </div>
+            <div class="form-group">
+                <label>Tell Me About Your Vision</label>
+                <textarea name="message" placeholder="Describe what you're looking for, any special requests, or questions you have..."></textarea>
+            </div>
+            <button type="submit">Request Booking</button>
+        </form>
+    </div>
+</section>
+
+<!-- Contact -->
+<section id="contact">
+    <div class="section-header fade-in">
+        <h2>Get in Touch</h2>
+        <div class="divider"></div>
+        <p>Questions? Just want to say hello? I'd love to hear from you.</p>
+    </div>
+    <div class="contact-content fade-in">
+        <form class="contact-form" onsubmit="handleContact(event)">
+            <div class="form-row">
+                <input type="text" name="name" placeholder="Your Name" required>
+                <input type="email" name="email" placeholder="Your Email" required>
+            </div>
+            <input type="text" name="subject" placeholder="Subject">
+            <textarea name="message" placeholder="Your message..." required></textarea>
+            <button type="submit">Send Message</button>
+        </form>
+        <div class="contact-info">
+            <div class="contact-info-item">
+                <div class="label">Email</div>
+                <div class="value"><a href="mailto:brice@jbperkphotography.com">brice@jbperkphotography.com</a></div>
+            </div>
+            <div class="contact-info-item">
+                <div class="label">Based In</div>
+                <div class="value">Frederick, MD</div>
+            </div>
+            <div class="contact-info-item">
+                <div class="label">Available</div>
+                <div class="value">Worldwide</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="footer-logo">
+        <svg viewBox="0 0 520 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="JBPerk Photography"><g transform="translate(65, 65)"><rect x="-30" y="-22" width="60" height="44" rx="2" fill="none" stroke="#c9a96e" stroke-width="1.2"/><path d="M-18,-22 L-18,-32 L-12,-36 L12,-36 L18,-32 L18,-22" fill="none" stroke="#c9a96e" stroke-width="1"/><rect x="-10" y="-35" width="20" height="4" rx="1" fill="none" stroke="#c9a96e" stroke-width="0.6" opacity="0.5"/><circle cx="0" cy="2" r="16" fill="none" stroke="#c9a96e" stroke-width="1.2"/><circle cx="0" cy="2" r="11" fill="none" stroke="#c9a96e" stroke-width="0.7" opacity="0.6"/><circle cx="0" cy="2" r="6" fill="none" stroke="#c9a96e" stroke-width="0.5" opacity="0.4"/><circle cx="-3" cy="-1" r="1.5" fill="#c9a96e" opacity="0.25"/><line x1="24" y1="-18" x2="24" y2="18" stroke="#c9a96e" stroke-width="0.4" opacity="0.3"/><line x1="27" y1="-18" x2="27" y2="18" stroke="#c9a96e" stroke-width="0.4" opacity="0.3"/><circle cx="-30" cy="-10" r="4" fill="none" stroke="#c9a96e" stroke-width="0.8" opacity="0.5"/><line x1="-30" y1="-14" x2="-30" y2="-10" stroke="#c9a96e" stroke-width="0.6" opacity="0.5"/></g><text x="120" y="58" font-family="Cormorant Garamond, Georgia, serif" font-size="42" letter-spacing="2"><tspan font-weight="400" fill="#e8e8e8">JB</tspan><tspan font-weight="300" fill="#c9a96e">Perk</tspan></text><line x1="120" y1="68" x2="310" y2="68" stroke="#c9a96e" stroke-width="0.5" opacity="0.5"/><text x="120" y="88" font-family="Cormorant Garamond, Georgia, serif" font-size="14" font-weight="300" fill="#777777" letter-spacing="7">PHOTOGRAPHY</text></svg>
+    </div>
+    <p>&copy; 2026 JBPerk Photography. All rights reserved.</p>
+</footer>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <div class="lightbox-close">&times;</div>
+    <img src="" alt="" id="lightbox-img">
+</div>
+
+<script>
+    // ===== CAMERA FLASH CLEANUP =====
+    const flashEl = document.getElementById('camera-flash');
+    if (flashEl) {
+        setTimeout(() => { flashEl.remove(); }, 3500);
+    }
+
+    // ===== SCROLL PROGRESS BAR =====
+    const scrollProgress = document.getElementById('scroll-progress');
+    window.addEventListener('scroll', () => {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollPercent = (scrollTop / docHeight) * 100;
+        scrollProgress.style.width = scrollPercent + '%';
+    });
+
+    // ===== SCROLL NAV =====
+    window.addEventListener('scroll', () => {
+        const nav = document.getElementById('navbar');
+        nav.classList.toggle('scrolled', window.scrollY > 50);
+
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-links a:not(.book-btn)');
+        let current = '';
+        sections.forEach(s => {
+            if (window.scrollY >= s.offsetTop - 120) current = s.id;
+        });
+        navLinks.forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+        });
+    });
+
+    // ===== MOBILE MENU =====
+    function toggleMenu() {
+        document.getElementById('nav-links').classList.toggle('open');
+    }
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', () => {
+            document.getElementById('nav-links').classList.remove('open');
+        });
+    });
+
+    // ===== FLOATING BOKEH PARTICLES =====
+    (function createParticles() {
+        const container = document.getElementById('hero-particles');
+        if (!container) return;
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            const size = Math.random() * 6 + 2;
+            particle.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                background: radial-gradient(circle, rgba(201,169,110,${Math.random() * 0.3 + 0.1}), transparent);
+                border-radius: 50%;
+                left: ${Math.random() * 100}%;
+                top: ${Math.random() * 100}%;
+                animation: floatParticle ${Math.random() * 10 + 8}s ease-in-out infinite;
+                animation-delay: ${Math.random() * -15}s;
+                pointer-events: none;
+            `;
+            container.appendChild(particle);
+        }
+    })();
+
+    // ===== INTERSECTION OBSERVER FOR ALL ANIMATIONS =====
+    const animObserver = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    // Observe all animated elements
+    document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right, .scale-in, .section-header').forEach(el => {
+        animObserver.observe(el);
+    });
+
+    // ===== STAGGERED GRID ITEM ANIMATIONS =====
+    document.querySelectorAll('.photo-grid, .portrait-grid, .pricing-grid, .matterport-grid').forEach(grid => {
+        const items = grid.children;
+        Array.from(items).forEach((item, index) => {
+            item.style.transitionDelay = (index * 0.1) + 's';
+        });
+    });
+
+    // ===== BUTTON RIPPLE EFFECT =====
+    document.querySelectorAll('.hero-cta, .pricing-cta, .cta-button, .book-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            const rect = this.getBoundingClientRect();
+            const ripple = document.createElement('span');
+            ripple.style.cssText = `
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(255,255,255,0.4);
+                width: 0; height: 0;
+                left: ${e.clientX - rect.left}px;
+                top: ${e.clientY - rect.top}px;
+                transform: translate(-50%, -50%);
+                animation: rippleEffect 0.6s ease-out forwards;
+                pointer-events: none;
+            `;
+            this.style.position = 'relative';
+            this.style.overflow = 'hidden';
+            this.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 700);
+        });
+    });
+
+    // ===== SUBTLE PARALLAX ON HERO =====
+    window.addEventListener('scroll', () => {
+        const hero = document.getElementById('home');
+        if (!hero) return;
+        const scrolled = window.scrollY;
+        if (scrolled < window.innerHeight) {
+            const heroContent = hero.querySelector('.hero-content');
+            if (heroContent) {
+                heroContent.style.transform = `translateY(${scrolled * 0.15}px)`;
+                heroContent.style.opacity = 1 - (scrolled / (window.innerHeight * 0.8));
+            }
+        }
+    });
+
+    // ===== LIGHTBOX =====
+    function openLightbox(src) {
+        document.getElementById('lightbox-img').src = src;
+        document.getElementById('lightbox').classList.add('active');
+    }
+    function closeLightbox() {
+        document.getElementById('lightbox').classList.remove('active');
+    }
+
+    // ===== FORMS =====
+    function handleBooking(e) {
+        e.preventDefault();
+        alert('Thank you for your booking request! I\'ll get back to you within 24 hours to confirm your session.');
+        e.target.reset();
+    }
+    function handleContact(e) {
+        e.preventDefault();
+        alert('Thank you for reaching out! I\'ll get back to you soon.');
+        e.target.reset();
+    }
+
+    // ===== LOAD PHOTOS FROM STORAGE =====
+    (async function loadPhotos() {
+        try {
+            const resp = await fetch('/api/images');
+            if (!resp.ok) return;
+            const data = await resp.json();
+            if (!data.images) return;
+
+            document.querySelectorAll('[data-slot]').forEach(item => {
+                const slot = item.dataset.slot;
+                const url = data.images[slot];
+                if (!url) return;
+
+                // Replace placeholder with real image
+                const placeholder = item.querySelector('.photo-placeholder');
+                if (placeholder) {
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.alt = slot.replace(/-/g, ' ');
+                    img.loading = 'lazy';
+                    img.style.cssText = 'width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;';
+                    placeholder.style.display = 'none';
+                    item.insertBefore(img, placeholder);
+
+                    // Make overlay clickable for lightbox
+                    const overlay = item.querySelector('.overlay');
+                    if (overlay) {
+                        overlay.style.cursor = 'pointer';
+                        overlay.addEventListener('click', () => openLightbox(url));
+                    }
+                }
+            });
+        } catch (e) {
+            // Silently fail — placeholders remain visible
+        }
+    })();
+</script>
+
+</body>
+</html>
