@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JBPerk Photography — Admin</title>
+    <title>Perkins Production — Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Slab:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -156,7 +156,7 @@
 
 <!-- Login -->
 <div class="login-screen" id="loginScreen">
-    <h1>JBPerk Photography</h1>
+    <h1>Perkins Production</h1>
     <div class="login-box">
         <p>Admin Dashboard</p>
         <input type="password" id="passInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
@@ -208,7 +208,6 @@ let currentImages = {};
 function doLogin() {
     const pass = document.getElementById('passInput').value;
     authToken = pass;
-    // Try fetching images to validate
     fetch('/api/images')
         .then(r => r.json())
         .then(data => {
@@ -222,7 +221,6 @@ function doLogin() {
             }
         })
         .catch(() => {
-            // If API isn't ready yet, still let them in (images endpoint is public)
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
             renderSlots();
@@ -280,7 +278,6 @@ function renderSection(containerId, slots) {
             </div>
         `;
 
-        // Drag and drop
         card.addEventListener('dragover', e => { e.preventDefault(); card.classList.add('drag-over'); });
         card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
         card.addEventListener('drop', e => {
@@ -296,7 +293,6 @@ function renderSection(containerId, slots) {
     });
 }
 
-// Compress image in browser before uploading (Vercel free plan has 4.5MB body limit)
 function compressImage(file, maxWidth, maxHeight, quality) {
     return new Promise((resolve) => {
         const img = new Image();
@@ -304,7 +300,6 @@ function compressImage(file, maxWidth, maxHeight, quality) {
         img.onload = () => {
             URL.revokeObjectURL(url);
             let w = img.width, h = img.height;
-            // Scale down if needed
             if (w > maxWidth || h > maxHeight) {
                 const ratio = Math.min(maxWidth / w, maxHeight / h);
                 w = Math.round(w * ratio);
@@ -338,7 +333,6 @@ async function handleUpload(slotId, file) {
     progress.style.width = '10%';
 
     try {
-        // Client-side compression first (Vercel has 4.5MB body limit)
         let uploadBlob = file;
         const originalSize = file.size;
         const WIDE_SLOTS = ['wedding-featured', 'wedding-film'];
@@ -347,10 +341,8 @@ async function handleUpload(slotId, file) {
 
         if (file.size > 3 * 1024 * 1024) {
             showToast('Compressing image before upload...', 'success');
-            // Start with good quality, reduce if still too large
             let quality = 0.85;
             uploadBlob = await compressImage(file, maxW, maxH, quality);
-            // If still over 4MB, compress harder
             while (uploadBlob.size > 3.5 * 1024 * 1024 && quality > 0.3) {
                 quality -= 0.15;
                 uploadBlob = await compressImage(file, maxW, maxH, quality);
@@ -420,7 +412,6 @@ function showToast(message, type) {
     setTimeout(() => toast.className = 'toast', 3000);
 }
 
-// Load images on page load (if returning with stored session)
 fetch('/api/images').then(r => r.json()).then(data => {
     if (data.images) currentImages = data.images;
 }).catch(() => {});
