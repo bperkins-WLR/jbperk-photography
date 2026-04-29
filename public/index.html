@@ -482,6 +482,150 @@
             .pricing-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
+        /* ===== WEB DESIGN ===== */
+        .webdesign-intro {
+            max-width: 750px; margin: 0 auto 3rem; text-align: center;
+        }
+        .webdesign-intro p {
+            color: var(--text-secondary); font-size: 1.1rem; line-height: 1.9;
+        }
+
+        .portfolio-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 2rem; max-width: 1100px; margin: 0 auto 4rem;
+        }
+        .portfolio-card {
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            overflow: hidden; transition: var(--transition); position: relative;
+        }
+        .portfolio-card:hover {
+            border-color: var(--text-accent); transform: translateY(-4px);
+        }
+        .portfolio-preview {
+            width: 100%; aspect-ratio: 16/9; overflow: hidden;
+            background: var(--bg-primary); position: relative;
+        }
+        .portfolio-preview iframe {
+            width: 200%; height: 200%; border: none;
+            transform: scale(0.5); transform-origin: top left;
+            pointer-events: none;
+        }
+        .portfolio-preview .preview-overlay {
+            position: absolute; inset: 0; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0); transition: var(--transition);
+        }
+        .portfolio-preview .preview-overlay:hover {
+            background: rgba(0,0,0,0.4);
+        }
+        .portfolio-preview .preview-overlay span {
+            opacity: 0; color: #fff; font-family: 'Josefin Slab', serif;
+            font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase;
+            padding: 10px 24px; border: 1px solid #fff;
+            transition: var(--transition);
+        }
+        .portfolio-preview .preview-overlay:hover span { opacity: 1; }
+        .portfolio-info {
+            padding: 1.5rem 2rem;
+        }
+        .portfolio-info h3 {
+            font-family: 'Josefin Slab', serif; font-size: 1.1rem;
+            font-weight: 400; letter-spacing: 2px; margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        .portfolio-info .portfolio-type {
+            font-size: 0.75rem; color: var(--text-accent);
+            font-family: 'Josefin Slab', serif; letter-spacing: 2px;
+            text-transform: uppercase; margin-bottom: 0.8rem;
+        }
+        .portfolio-info p {
+            color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7;
+        }
+        .portfolio-tech {
+            display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;
+        }
+        .portfolio-tech span {
+            font-size: 0.65rem; font-family: 'Josefin Slab', serif;
+            letter-spacing: 1.5px; text-transform: uppercase;
+            padding: 4px 10px; border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+        }
+
+        /* Services strip */
+        .webdesign-services {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem; max-width: 900px; margin: 0 auto 4rem;
+        }
+        .wd-service {
+            text-align: center; padding: 2rem 1.5rem;
+            border: 1px solid var(--border-subtle); transition: var(--transition);
+        }
+        .wd-service:hover { border-color: var(--text-accent); }
+        .wd-service svg {
+            width: 36px; height: 36px; stroke: var(--text-accent);
+            margin-bottom: 1rem;
+        }
+        .wd-service h4 {
+            font-family: 'Josefin Slab', serif; font-size: 0.8rem;
+            font-weight: 400; letter-spacing: 2px; text-transform: uppercase;
+            color: var(--text-primary); margin-bottom: 0.6rem;
+        }
+        .wd-service p {
+            color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;
+        }
+
+        /* Process timeline */
+        .process-section h3 {
+            text-align: center; font-family: 'Josefin Slab', serif;
+            font-size: 1rem; font-weight: 400; letter-spacing: 4px;
+            text-transform: uppercase; color: var(--text-accent);
+            margin-bottom: 2.5rem;
+        }
+        .process-steps {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 1rem; max-width: 900px; margin: 0 auto;
+        }
+        .process-step {
+            text-align: center; padding: 1.5rem 1rem; position: relative;
+        }
+        .process-step .step-num {
+            font-family: 'Josefin Slab', serif; font-size: 2rem;
+            font-weight: 300; color: var(--text-accent); margin-bottom: 0.5rem;
+            opacity: 0.5;
+        }
+        .process-step h4 {
+            font-family: 'Josefin Slab', serif; font-size: 0.8rem;
+            font-weight: 400; letter-spacing: 2px; text-transform: uppercase;
+            color: var(--text-primary); margin-bottom: 0.5rem;
+        }
+        .process-step p {
+            color: var(--text-secondary); font-size: 0.85rem; line-height: 1.5;
+        }
+
+        /* Web design pricing row (inside main pricing grid) */
+        .pricing-divider {
+            grid-column: 1 / -1; text-align: center;
+            padding: 2rem 0 0.5rem; margin-top: 1rem;
+        }
+        .pricing-divider h3 {
+            font-family: 'Josefin Slab', serif; font-size: 1rem;
+            font-weight: 400; letter-spacing: 4px; text-transform: uppercase;
+            color: var(--text-accent);
+        }
+        .pricing-divider .divider {
+            width: 60px; height: 1px; background: var(--text-accent);
+            margin: 0.8rem auto 0; opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .portfolio-grid { grid-template-columns: 1fr; }
+            .webdesign-services { grid-template-columns: 1fr; }
+            .process-steps { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .webdesign-services { grid-template-columns: repeat(2, 1fr); }
+        }
+
         /* ===== FOOTER ===== */
         footer {
             background: var(--bg-primary); padding: 3rem;
@@ -575,7 +719,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Grand logo entrance ‚Äî scale up from nothing with a cinematic feel */
+        /* Grand logo entrance — scale up from nothing with a cinematic feel */
         @keyframes logoGrandEntrance {
             0% { opacity: 0; transform: scale(0.3) translateY(40px); filter: drop-shadow(0 0 0px rgba(201,169,110,0)); }
             40% { opacity: 1; transform: scale(1.08) translateY(-5px); filter: drop-shadow(0 0 40px rgba(201,169,110,0.4)); }
@@ -785,6 +929,7 @@
         <li><a href="#weddings">Weddings</a></li>
         <li><a href="#portraits">Portraits</a></li>
         <li><a href="#matterport">3D/VR</a></li>
+        <li><a href="#webdesign">Web Design</a></li>
         <li><a href="#about">About</a></li>
         <li><a href="#pricing">Pricing</a></li>
         <li><a href="#contact">Contact</a></li>
@@ -1039,6 +1184,140 @@
     </div>
 </section>
 
+<!-- Web Design -->
+<section id="webdesign">
+    <div class="section-header fade-in">
+        <h2>Web Design</h2>
+        <div class="divider"></div>
+        <p>Custom websites built to elevate your brand</p>
+    </div>
+    <div class="webdesign-intro fade-in">
+        <p>From concept to launch, I build custom websites that look stunning, load fast, and convert visitors into customers. Every site is hand-coded, fully responsive, and optimized for search engines &mdash; no cookie-cutter templates.</p>
+    </div>
+
+    <!-- Portfolio -->
+    <div class="portfolio-grid">
+        <div class="portfolio-card fade-in">
+            <div class="portfolio-preview">
+                <iframe src="https://shotgun-cup-series.vercel.app/" loading="lazy" title="Shotgun Cup Series"></iframe>
+                <a href="https://shotgun-cup-series.vercel.app/" target="_blank" rel="noopener" class="preview-overlay">
+                    <span>Visit Site</span>
+                </a>
+            </div>
+            <div class="portfolio-info">
+                <div class="portfolio-type">Sports &amp; Recreation</div>
+                <h3>Shotgun Cup Series</h3>
+                <p>A golf league platform featuring live season standings, leaderboards, player stats, and automatic scoring &mdash; built for competitive fun.</p>
+                <div class="portfolio-tech">
+                    <span>React</span>
+                    <span>Vercel</span>
+                    <span>Live Data</span>
+                </div>
+            </div>
+        </div>
+        <div class="portfolio-card fade-in">
+            <div class="portfolio-preview">
+                <iframe src="https://backontrack-website.vercel.app/" loading="lazy" title="Back on Track"></iframe>
+                <a href="https://backontrack-website.vercel.app/" target="_blank" rel="noopener" class="preview-overlay">
+                    <span>Visit Site</span>
+                </a>
+            </div>
+            <div class="portfolio-info">
+                <div class="portfolio-type">Nonprofit &amp; Community</div>
+                <h3>Back on Track</h3>
+                <p>A community track &amp; field series site with event schedules, results galleries, sponsor showcases, newsletters, and waiver downloads.</p>
+                <div class="portfolio-tech">
+                    <span>Next.js</span>
+                    <span>Vercel</span>
+                    <span>Cloudinary</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Services -->
+    <div class="webdesign-services fade-in">
+        <div class="wd-service">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.2">
+                <rect x="2" y="3" width="20" height="14" rx="2"/>
+                <line x1="8" y1="21" x2="16" y2="21"/>
+                <line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+            <h4>Design &amp; Development</h4>
+            <p>Custom, hand-coded websites tailored to your brand and goals</p>
+        </div>
+        <div class="wd-service">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.2">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <h4>SEO &amp; Performance</h4>
+            <p>Optimized for search engines, fast load times, and accessibility</p>
+        </div>
+        <div class="wd-service">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <h4>Hosting &amp; Maintenance</h4>
+            <p>Reliable hosting setup, SSL, and ongoing support to keep you running</p>
+        </div>
+        <div class="wd-service">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+            <h4>Branding &amp; Logo</h4>
+            <p>Logo design, color palettes, and visual identity that set you apart</p>
+        </div>
+        <div class="wd-service">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.2">
+                <rect x="1" y="4" width="22" height="16" rx="2"/>
+                <line x1="1" y1="10" x2="23" y2="10"/>
+            </svg>
+            <h4>E-Commerce</h4>
+            <p>Online stores and payment integrations that drive sales</p>
+        </div>
+        <div class="wd-service">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.2">
+                <polyline points="16 18 22 12 16 6"/>
+                <polyline points="8 6 2 12 8 18"/>
+            </svg>
+            <h4>Custom Features</h4>
+            <p>Dashboards, databases, booking systems, and any feature you need</p>
+        </div>
+    </div>
+
+    <!-- Process -->
+    <div class="process-section fade-in">
+        <h3>The Process</h3>
+        <div class="process-steps">
+            <div class="process-step">
+                <div class="step-num">01</div>
+                <h4>Discovery</h4>
+                <p>We talk goals, audience, and vision for your site</p>
+            </div>
+            <div class="process-step">
+                <div class="step-num">02</div>
+                <h4>Design</h4>
+                <p>Mockups and revisions until the look is perfect</p>
+            </div>
+            <div class="process-step">
+                <div class="step-num">03</div>
+                <h4>Build</h4>
+                <p>Hand-coded, tested on every device and browser</p>
+            </div>
+            <div class="process-step">
+                <div class="step-num">04</div>
+                <h4>Launch</h4>
+                <p>Go live with training, hosting, and ongoing support</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-cta fade-in" style="margin-top: 3rem;">
+        <a href="#contact">Start Your Project</a>
+    </div>
+</section>
+
 <!-- About -->
 <section id="about">
     <div class="section-header fade-in">
@@ -1058,7 +1337,7 @@
         <div class="about-text fade-in-right">
             <h3>The Story Behind the Lens</h3>
             <p>Every photograph tells a story. As a passionate photographer, I believe in capturing the raw, authentic moments that make life extraordinary. From the quiet intimacy of a portrait to the grandeur of a wedding day, my lens seeks out the beauty in every frame.</p>
-            <p>With years of experience and a dedication to the craft, I bring a unique perspective to every shoot. Whether it's wedding photography and film, a professional headshot, a family celebration, or a Matterport 3D tour, I'm committed to delivering results that exceed expectations.</p>
+            <p>With years of experience and a dedication to the craft, I bring a unique perspective to every project. Whether it's wedding photography and film, a professional headshot, a family celebration, a Matterport 3D tour, or a custom-built website, I'm committed to delivering results that exceed expectations.</p>
             <div class="signature">&mdash; Brice Perkins</div>
         </div>
     </div>
@@ -1150,6 +1429,52 @@
             </ul>
             <a href="#book" class="pricing-cta">Book Now</a>
         </div>
+
+        <!-- Web Design Pricing Divider -->
+        <div class="pricing-divider">
+            <h3>Web Design</h3>
+            <div class="divider"></div>
+        </div>
+
+        <div class="pricing-card scale-in">
+            <h3>Starter</h3>
+            <div class="price">$1,500</div>
+            <div class="price-note">starting at</div>
+            <ul class="features">
+                <li>Up to 5 pages</li>
+                <li>Mobile-responsive design</li>
+                <li>Contact form</li>
+                <li>Basic SEO setup</li>
+                <li>Hosting &amp; domain setup</li>
+            </ul>
+            <a href="#contact" class="pricing-cta">Get Started</a>
+        </div>
+        <div class="pricing-card featured scale-in">
+            <h3>Business</h3>
+            <div class="price">$3,000</div>
+            <div class="price-note">starting at</div>
+            <ul class="features">
+                <li>Up to 10 pages</li>
+                <li>Custom design &amp; branding</li>
+                <li>CMS integration</li>
+                <li>Advanced SEO &amp; analytics</li>
+                <li>30 days post-launch support</li>
+            </ul>
+            <a href="#contact" class="pricing-cta">Get Started</a>
+        </div>
+        <div class="pricing-card scale-in">
+            <h3>Premium</h3>
+            <div class="price">$5,000+</div>
+            <div class="price-note">starting at</div>
+            <ul class="features">
+                <li>Unlimited pages</li>
+                <li>E-commerce / booking system</li>
+                <li>Custom features &amp; integrations</li>
+                <li>Logo &amp; brand identity package</li>
+                <li>60 days support &amp; training</li>
+            </ul>
+            <a href="#contact" class="pricing-cta">Get Started</a>
+        </div>
     </div>
     <p class="pricing-note fade-in">Every project is unique. Prices reflect starting rates &mdash; <a href="#contact" style="color: var(--text-accent); text-decoration: none;">reach out</a> for a custom quote tailored to your needs.</p>
 </section>
@@ -1198,6 +1523,9 @@
                         <option value="senior">Senior Portraits</option>
                         <option value="event">Event Coverage</option>
                         <option value="matterport">Matterport 3D/VR Scan</option>
+                        <option value="web-starter">Web Design — Starter</option>
+                        <option value="web-business">Web Design — Business</option>
+                        <option value="web-premium">Web Design — Premium</option>
                         <option value="other">Other</option>
                     </select>
                 </div>
@@ -1441,7 +1769,7 @@
                 }
             });
         } catch (e) {
-            // Silently fail ‚Äî placeholders remain visible
+            // Silently fail — placeholders remain visible
         }
     })();
 </script>
