@@ -1743,6 +1743,7 @@
             if (!resp.ok) return;
             const data = await resp.json();
             if (!data.images) return;
+            const positions = data.positions || {};
 
             document.querySelectorAll('[data-slot]').forEach(item => {
                 const slot = item.dataset.slot;
@@ -1756,7 +1757,15 @@
                     img.src = url;
                     img.alt = slot.replace(/-/g, ' ');
                     img.loading = 'lazy';
-                    img.style.cssText = 'width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;';
+                    const pos = positions[slot];
+                    let style = 'width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;';
+                    if (pos) {
+                        style += `object-position:${pos.x}% ${pos.y}%;`;
+                        if (pos.scale && pos.scale !== 1) {
+                            style += `transform:scale(${pos.scale});transform-origin:${pos.x}% ${pos.y}%;`;
+                        }
+                    }
+                    img.style.cssText = style;
                     placeholder.style.display = 'none';
                     item.insertBefore(img, placeholder);
 

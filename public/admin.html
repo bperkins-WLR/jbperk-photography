@@ -145,10 +145,67 @@
             border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        /* Crop/Reposition Modal */
+        .crop-overlay {
+            display: none; position: fixed; inset: 0; z-index: 2000;
+            background: rgba(0,0,0,0.92); flex-direction: column; align-items: center; justify-content: center;
+        }
+        .crop-overlay.active { display: flex; }
+        .crop-header {
+            color: var(--gold); font-family: 'Josefin Slab', serif; font-size: 0.85rem;
+            letter-spacing: 4px; text-transform: uppercase; margin-bottom: 1rem;
+        }
+        .crop-header span { color: var(--text2); font-size: 0.75rem; letter-spacing: 2px; display: block; margin-top: 0.4rem; }
+        .crop-container {
+            position: relative; width: 600px; max-width: 90vw; aspect-ratio: 16/10;
+            overflow: hidden; border: 2px solid var(--gold); cursor: grab; background: var(--bg);
+            touch-action: none;
+        }
+        .crop-container:active { cursor: grabbing; }
+        .crop-container img {
+            position: absolute; top: 0; left: 0;
+            transform-origin: 0 0; user-select: none; pointer-events: none;
+            max-width: none; max-height: none;
+        }
+        .crop-crosshair {
+            position: absolute; inset: 0; pointer-events: none;
+            background: linear-gradient(to right, transparent 49.5%, rgba(201,169,110,0.25) 49.5%, rgba(201,169,110,0.25) 50.5%, transparent 50.5%),
+                        linear-gradient(to bottom, transparent 49.5%, rgba(201,169,110,0.25) 49.5%, rgba(201,169,110,0.25) 50.5%, transparent 50.5%);
+        }
+        .crop-controls {
+            display: flex; gap: 1rem; margin-top: 1.2rem; align-items: center;
+        }
+        .crop-controls button {
+            padding: 10px 24px; font-family: 'Josefin Slab', serif; font-size: 0.75rem;
+            font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
+            cursor: pointer; transition: all 0.3s; border: 1px solid var(--border);
+        }
+        .crop-controls .save-crop { background: var(--gold); color: var(--bg); border-color: var(--gold); }
+        .crop-controls .save-crop:hover { background: var(--gold-light); }
+        .crop-controls .cancel-crop { background: none; color: var(--text2); }
+        .crop-controls .cancel-crop:hover { border-color: var(--gold); color: var(--gold); }
+        .crop-controls .reset-crop { background: none; color: var(--text2); font-size: 0.7rem; }
+        .crop-controls .reset-crop:hover { color: var(--text); }
+        .zoom-slider {
+            display: flex; align-items: center; gap: 0.5rem; color: var(--text2);
+            font-family: 'Josefin Slab', serif; font-size: 0.7rem; letter-spacing: 1px;
+        }
+        .zoom-slider input[type="range"] {
+            width: 120px; accent-color: var(--gold); cursor: pointer;
+        }
+        .zoom-slider span { min-width: 35px; text-align: center; }
+
+        /* Crop button in slot actions */
+        .slot-actions .crop-btn {
+            background: none; color: var(--gold); border-color: var(--gold); opacity: 0.7;
+        }
+        .slot-actions .crop-btn:hover { opacity: 1; }
+
         @media (max-width: 768px) {
             .slots-grid { grid-template-columns: 1fr; }
             .slot-card.featured { grid-column: span 1; }
             .dashboard { padding: 1rem; }
+            .crop-container { width: 95vw; }
         }
     </style>
 </head>
@@ -179,6 +236,28 @@
     <div class="slots-grid" id="portraitSlots"></div>
 </div>
 
+<!-- Crop/Reposition Modal -->
+<div class="crop-overlay" id="cropOverlay">
+    <div class="crop-header">
+        Reposition Photo — <span id="cropSlotName"></span>
+        <span>Drag to pan • Scroll or slider to zoom</span>
+    </div>
+    <div class="crop-container" id="cropContainer">
+        <img id="cropImage" src="" alt="Crop preview">
+        <div class="crop-crosshair"></div>
+    </div>
+    <div class="crop-controls">
+        <div class="zoom-slider">
+            ZOOM
+            <input type="range" id="zoomSlider" min="100" max="300" value="100" step="5">
+            <span id="zoomLabel">100%</span>
+        </div>
+        <button class="reset-crop" onclick="resetCrop()">Reset</button>
+        <button class="cancel-crop" onclick="closeCrop()">Cancel</button>
+        <button class="save-crop" onclick="saveCrop()">Save Position</button>
+    </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -204,15 +283,21 @@ const SLOTS = {
 
 let authToken = '';
 let currentImages = {};
+let currentPositions = {};
+
+// Crop state
+let cropState = { slot: null, x: 0, y: 0, scale: 1, dragging: false, startX: 0, startY: 0, imgW: 0, imgH: 0, contW: 0, contH: 0 };
 
 function doLogin() {
     const pass = document.getElementById('passInput').value;
     authToken = pass;
+    // Try fetching images to validate
     fetch('/api/images')
         .then(r => r.json())
         .then(data => {
             if (data.images !== undefined) {
                 currentImages = data.images;
+                if (data.positions) currentPositions = data.positions;
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('dashboard').style.display = 'block';
                 renderSlots();
@@ -221,6 +306,7 @@ function doLogin() {
             }
         })
         .catch(() => {
+            // If API isn't ready yet, still let them in (images endpoint is public)
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
             renderSlots();
@@ -251,6 +337,10 @@ function renderSection(containerId, slots) {
     container.innerHTML = '';
     slots.forEach(slot => {
         const hasImage = currentImages[slot.id];
+        const pos = currentPositions[slot.id];
+        const posStyle = hasImage && pos
+            ? `display:block; object-position:${pos.x}% ${pos.y}%; transform:scale(${pos.scale || 1}); transform-origin:${pos.x}% ${pos.y}%`
+            : hasImage ? 'display:block' : '';
         const card = document.createElement('div');
         card.className = 'slot-card' + (slot.featured ? ' featured' : '');
         card.dataset.slot = slot.id;
@@ -261,7 +351,7 @@ function renderSection(containerId, slots) {
             </div>
             <div class="slot-preview" id="preview-${slot.id}">
                 ${hasImage
-                    ? `<img src="${hasImage}" style="display:block" alt="${slot.label}">`
+                    ? `<img src="${hasImage}" style="${posStyle}" alt="${slot.label}">`
                     : `<div class="placeholder-icon">
                         <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
                         <span>Drag photo here or click Upload</span>
@@ -274,10 +364,12 @@ function renderSection(containerId, slots) {
                     Upload
                     <input type="file" accept="image/*" onchange="handleUpload('${slot.id}', this.files[0])">
                 </label>
+                <button class="crop-btn" onclick="openCrop('${slot.id}')" ${!hasImage ? 'disabled style="opacity:0.2;cursor:default"' : ''}>Reposition</button>
                 <button class="delete-btn" onclick="handleDelete('${slot.id}')" ${!hasImage ? 'disabled style="opacity:0.2;cursor:default"' : ''}>Remove</button>
             </div>
         `;
 
+        // Drag and drop
         card.addEventListener('dragover', e => { e.preventDefault(); card.classList.add('drag-over'); });
         card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
         card.addEventListener('drop', e => {
@@ -293,6 +385,7 @@ function renderSection(containerId, slots) {
     });
 }
 
+// Compress image in browser before uploading (Vercel free plan has 4.5MB body limit)
 function compressImage(file, maxWidth, maxHeight, quality) {
     return new Promise((resolve) => {
         const img = new Image();
@@ -300,6 +393,7 @@ function compressImage(file, maxWidth, maxHeight, quality) {
         img.onload = () => {
             URL.revokeObjectURL(url);
             let w = img.width, h = img.height;
+            // Scale down if needed
             if (w > maxWidth || h > maxHeight) {
                 const ratio = Math.min(maxWidth / w, maxHeight / h);
                 w = Math.round(w * ratio);
@@ -333,6 +427,7 @@ async function handleUpload(slotId, file) {
     progress.style.width = '10%';
 
     try {
+        // Client-side compression first (Vercel has 4.5MB body limit)
         let uploadBlob = file;
         const originalSize = file.size;
         const WIDE_SLOTS = ['wedding-featured', 'wedding-film'];
@@ -341,8 +436,10 @@ async function handleUpload(slotId, file) {
 
         if (file.size > 3 * 1024 * 1024) {
             showToast('Compressing image before upload...', 'success');
+            // Start with good quality, reduce if still too large
             let quality = 0.85;
             uploadBlob = await compressImage(file, maxW, maxH, quality);
+            // If still over 4MB, compress harder
             while (uploadBlob.size > 3.5 * 1024 * 1024 && quality > 0.3) {
                 quality -= 0.15;
                 uploadBlob = await compressImage(file, maxW, maxH, quality);
@@ -412,8 +509,206 @@ function showToast(message, type) {
     setTimeout(() => toast.className = 'toast', 3000);
 }
 
+// ===== CROP / REPOSITION =====
+function openCrop(slotId) {
+    const url = currentImages[slotId];
+    if (!url) return;
+
+    const overlay = document.getElementById('cropOverlay');
+    const img = document.getElementById('cropImage');
+    const container = document.getElementById('cropContainer');
+    const slider = document.getElementById('zoomSlider');
+
+    cropState.slot = slotId;
+    document.getElementById('cropSlotName').textContent = slotId.replace('-', ' — ');
+
+    // Load existing position or default
+    const pos = currentPositions[slotId] || { x: 50, y: 50, scale: 1 };
+
+    img.onload = () => {
+        const contRect = container.getBoundingClientRect();
+        cropState.contW = contRect.width;
+        cropState.contH = contRect.height;
+        cropState.imgW = img.naturalWidth;
+        cropState.imgH = img.naturalHeight;
+
+        // Calculate the scale so the image covers the container at minimum
+        const coverScale = Math.max(cropState.contW / cropState.imgW, cropState.contH / cropState.imgH);
+        cropState.baseScale = coverScale;
+        cropState.scale = pos.scale || 1;
+        cropState.x = pos.x;
+        cropState.y = pos.y;
+
+        slider.value = Math.round(cropState.scale * 100);
+        document.getElementById('zoomLabel').textContent = Math.round(cropState.scale * 100) + '%';
+
+        updateCropImage();
+        overlay.classList.add('active');
+    };
+    img.src = url;
+}
+
+function updateCropImage() {
+    const img = document.getElementById('cropImage');
+    const s = cropState;
+    const totalScale = s.baseScale * s.scale;
+    const scaledW = s.imgW * totalScale;
+    const scaledH = s.imgH * totalScale;
+
+    // Convert percentage position to pixel offset
+    // x=50, y=50 means center; x=0,y=0 means top-left visible
+    const offsetX = -((s.x / 100) * scaledW - s.contW / 2);
+    const offsetY = -((s.y / 100) * scaledH - s.contH / 2);
+
+    img.style.width = scaledW + 'px';
+    img.style.height = scaledH + 'px';
+    img.style.left = offsetX + 'px';
+    img.style.top = offsetY + 'px';
+    img.style.transform = 'none';
+}
+
+function closeCrop() {
+    document.getElementById('cropOverlay').classList.remove('active');
+    cropState.slot = null;
+}
+
+function resetCrop() {
+    cropState.x = 50;
+    cropState.y = 50;
+    cropState.scale = 1;
+    document.getElementById('zoomSlider').value = 100;
+    document.getElementById('zoomLabel').textContent = '100%';
+    updateCropImage();
+}
+
+async function saveCrop() {
+    const s = cropState;
+    if (!s.slot) return;
+
+    try {
+        const resp = await fetch('/api/position', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify({ slot: s.slot, x: Math.round(s.x * 10) / 10, y: Math.round(s.y * 10) / 10, scale: Math.round(s.scale * 100) / 100 })
+        });
+        const data = await resp.json();
+        if (data.success) {
+            currentPositions[s.slot] = { x: s.x, y: s.y, scale: s.scale };
+            closeCrop();
+            renderSlots();
+            showToast('Photo repositioned!', 'success');
+        } else {
+            showToast(data.error || 'Save failed', 'error');
+        }
+    } catch (err) {
+        showToast('Save failed: ' + err.message, 'error');
+    }
+}
+
+// Crop drag handlers
+(function() {
+    const container = document.getElementById('cropContainer');
+    const slider = document.getElementById('zoomSlider');
+
+    // Mouse drag
+    container.addEventListener('mousedown', e => {
+        e.preventDefault();
+        cropState.dragging = true;
+        cropState.startX = e.clientX;
+        cropState.startY = e.clientY;
+        cropState.dragStartPosX = cropState.x;
+        cropState.dragStartPosY = cropState.y;
+    });
+
+    window.addEventListener('mousemove', e => {
+        if (!cropState.dragging) return;
+        const s = cropState;
+        const totalScale = s.baseScale * s.scale;
+        const scaledW = s.imgW * totalScale;
+        const scaledH = s.imgH * totalScale;
+
+        const dx = e.clientX - s.startX;
+        const dy = e.clientY - s.startY;
+
+        // Convert pixel drag to percentage movement
+        s.x = s.dragStartPosX - (dx / scaledW) * 100;
+        s.y = s.dragStartPosY - (dy / scaledH) * 100;
+
+        // Clamp so image always covers the container
+        const minX = (s.contW / 2) / scaledW * 100;
+        const maxX = 100 - minX;
+        const minY = (s.contH / 2) / scaledH * 100;
+        const maxY = 100 - minY;
+        s.x = Math.max(minX, Math.min(maxX, s.x));
+        s.y = Math.max(minY, Math.min(maxY, s.y));
+
+        updateCropImage();
+    });
+
+    window.addEventListener('mouseup', () => { cropState.dragging = false; });
+
+    // Touch drag
+    container.addEventListener('touchstart', e => {
+        if (e.touches.length === 1) {
+            cropState.dragging = true;
+            cropState.startX = e.touches[0].clientX;
+            cropState.startY = e.touches[0].clientY;
+            cropState.dragStartPosX = cropState.x;
+            cropState.dragStartPosY = cropState.y;
+        }
+    }, { passive: true });
+
+    container.addEventListener('touchmove', e => {
+        if (!cropState.dragging || e.touches.length !== 1) return;
+        const s = cropState;
+        const totalScale = s.baseScale * s.scale;
+        const scaledW = s.imgW * totalScale;
+        const scaledH = s.imgH * totalScale;
+        const dx = e.touches[0].clientX - s.startX;
+        const dy = e.touches[0].clientY - s.startY;
+        s.x = s.dragStartPosX - (dx / scaledW) * 100;
+        s.y = s.dragStartPosY - (dy / scaledH) * 100;
+        const minX = (s.contW / 2) / scaledW * 100;
+        const maxX = 100 - minX;
+        const minY = (s.contH / 2) / scaledH * 100;
+        const maxY = 100 - minY;
+        s.x = Math.max(minX, Math.min(maxX, s.x));
+        s.y = Math.max(minY, Math.min(maxY, s.y));
+        updateCropImage();
+    }, { passive: true });
+
+    container.addEventListener('touchend', () => { cropState.dragging = false; });
+
+    // Scroll zoom
+    container.addEventListener('wheel', e => {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? -0.05 : 0.05;
+        cropState.scale = Math.max(1, Math.min(3, cropState.scale + delta));
+        slider.value = Math.round(cropState.scale * 100);
+        document.getElementById('zoomLabel').textContent = Math.round(cropState.scale * 100) + '%';
+        updateCropImage();
+    }, { passive: false });
+
+    // Slider zoom
+    slider.addEventListener('input', () => {
+        cropState.scale = parseInt(slider.value) / 100;
+        document.getElementById('zoomLabel').textContent = slider.value + '%';
+        updateCropImage();
+    });
+
+    // Escape to close
+    window.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && cropState.slot) closeCrop();
+    });
+})();
+
+// Load images on page load (if returning with stored session)
 fetch('/api/images').then(r => r.json()).then(data => {
     if (data.images) currentImages = data.images;
+    if (data.positions) currentPositions = data.positions;
 }).catch(() => {});
 </script>
 </body>
