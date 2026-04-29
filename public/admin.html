@@ -526,24 +526,28 @@ function openCrop(slotId) {
     const pos = currentPositions[slotId] || { x: 50, y: 50, scale: 1 };
 
     img.onload = () => {
-        const contRect = container.getBoundingClientRect();
-        cropState.contW = contRect.width;
-        cropState.contH = contRect.height;
-        cropState.imgW = img.naturalWidth;
-        cropState.imgH = img.naturalHeight;
-
-        // Calculate the scale so the image covers the container at minimum
-        const coverScale = Math.max(cropState.contW / cropState.imgW, cropState.contH / cropState.imgH);
-        cropState.baseScale = coverScale;
-        cropState.scale = pos.scale || 1;
-        cropState.x = pos.x;
-        cropState.y = pos.y;
-
-        slider.value = Math.round(cropState.scale * 100);
-        document.getElementById('zoomLabel').textContent = Math.round(cropState.scale * 100) + '%';
-
-        updateCropImage();
+        // Show overlay FIRST so container has dimensions
         overlay.classList.add('active');
+
+        requestAnimationFrame(() => {
+            const contRect = container.getBoundingClientRect();
+            cropState.contW = contRect.width;
+            cropState.contH = contRect.height;
+            cropState.imgW = img.naturalWidth;
+            cropState.imgH = img.naturalHeight;
+
+            // Calculate the scale so the image covers the container at minimum
+            const coverScale = Math.max(cropState.contW / cropState.imgW, cropState.contH / cropState.imgH);
+            cropState.baseScale = coverScale;
+            cropState.scale = pos.scale || 1;
+            cropState.x = pos.x;
+            cropState.y = pos.y;
+
+            slider.value = Math.round(cropState.scale * 100);
+            document.getElementById('zoomLabel').textContent = Math.round(cropState.scale * 100) + '%';
+
+            updateCropImage();
+        });
     };
     img.src = url;
 }
